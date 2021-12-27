@@ -1,0 +1,7 @@
+# IDE files
+**/.vscode/
+**/*.swp
+
+# Python ignores
+venv/
+**/__pycache__/
