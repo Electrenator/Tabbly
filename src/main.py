@@ -17,7 +17,7 @@ class Main:
             while True:
                 status = f"Using the power of {this.browser.countTabs()} tabs 📑"
                 print(this.presence.update(status))
-                time.sleep(15)
+                time.sleep(60)
         except KeyboardInterrupt:
             pass
 
