@@ -1,6 +1,6 @@
 import time
 import sys
-from browser import Browser
+from browsers import Browsers
 
 from discordPresence import DiscordPresence
 
@@ -10,12 +10,17 @@ class Main:
         print(this, arg, kwargs)
         this.client_id = "924638024346791986"
         this.presence = DiscordPresence(this.client_id)
-        this.browser = Browser()
+        this.browsers = Browsers()
 
     def start(this):
         try:
             while True:
-                status = f"Using the power of {this.browser.countTabs()} tabs 📑"
+                tab_count = this.browsers.countTabs()
+                status = (
+                    f"Using the power of {tab_count} tab"
+                    + ("s" if tab_count != 1 else "")
+                    + " 📑"
+                )
                 print(this.presence.update(status))
                 time.sleep(60)
         except KeyboardInterrupt:

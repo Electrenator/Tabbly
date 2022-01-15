@@ -9,8 +9,8 @@ class DiscordPresence:
 
     def update(this, state: str):
         return this._RPC.update(state=state)
-
+        
     def __del__(this):
-        if (this._RPC):
+        if this._RPC:
             this._RPC.close()
         print("Closed Presence instance")
