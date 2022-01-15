@@ -16,15 +16,23 @@ class Main:
         try:
             while True:
                 tab_count = this.browsers.countTabs()
-                status = (
-                    f"Using the power of {tab_count} tab"
-                    + ("s" if tab_count != 1 else "")
-                    + " 📑"
-                )
-                print(this.presence.update(status))
+                this.updateStatus(tab_count)
                 time.sleep(60)
         except KeyboardInterrupt:
             pass
+
+    def updateStatus(this, tab_count: int):
+        if (tab_count > 0):
+            this.presence.resume()
+            status = (
+                f"Using the power of {tab_count} tab"
+                + ("s" if tab_count != 1 else "")
+                + " 📑"
+            )
+            print(this.presence.update(status))
+        else:
+            print("No tabs detected")
+            this.presence.pause()
 
 
 if __name__ == "__main__":
