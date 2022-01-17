@@ -11,6 +11,13 @@ class BrowserBase(ABC):
 
     @abstractmethod
     def isRunning(this) -> bool:
+        """
+        Checks if this browser is running by searching for the `application_name`
+        within the active programs.
+
+        Returns:
+            true if the process is detected to be active, false if not.
+        """
         if this.application_name == None:
             raise NotImplementedError()
 
@@ -24,6 +31,11 @@ class BrowserBase(ABC):
 
     @abstractmethod
     def getWindows(this) -> list:
+        """
+        Returns:
+            A list of active browser windows for this browser. A window usually
+            has one or more `tabs` within itself.
+        """
         if this.possible_tab_locations == None:
             raise NotImplementedError()
 
@@ -40,6 +52,11 @@ class BrowserBase(ABC):
 
     @abstractmethod
     def getTabs(this) -> list:
+        """
+        Returns:
+            a list of all the active browser tabs within this browser. This is a
+            concatenation of all the tabs open within all the windows.
+        """
         browser_window_data = this.getWindows()
         browser_tab_data = []
 
@@ -53,4 +70,19 @@ class BrowserBase(ABC):
 
     @abstractmethod
     def parse_session_file(this, file_path: str) -> list:
+        """
+        Parses a browsers session file within `this.possible_tab_locations` for windows
+        and tabs. This is browser specific and should be written for every browser subclass.
+
+        Returns:
+            A object with the following structure::
+
+                {
+                    "windows": [
+                        {
+                            "tabs": [...]
+                        }
+                    ]
+                }
+        """
         raise NotImplementedError()
