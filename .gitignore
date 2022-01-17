@@ -1,3 +1,6 @@
+# Program ignores
+log/
+
 # IDE files
 **/.vscode/
 **/*.swp

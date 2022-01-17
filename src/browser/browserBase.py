@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-import glob
-import os
 from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess
+from filesystem import Filesystem
 
 
 class BrowserBase(ABC):
@@ -28,14 +27,15 @@ class BrowserBase(ABC):
         if this.possible_tab_locations == None:
             raise NotImplementedError()
 
-        session_files = this._find_files(this.possible_tab_locations[0])
+        session_files = Filesystem.find_files(this.possible_tab_locations[0])
         browser_window_data = []
 
         for file_path in session_files:
             for window in this.parse_session_file(file_path):
                 browser_window_data.append(window)
-
-        print(f"Read a total of {len(browser_window_data)} windows from '{this.__class__.__name__}'")
+        print(
+            f"Read a total of {len(browser_window_data)} windows from '{this.__class__.__name__}'"
+        )
         return browser_window_data
 
     @abstractmethod
@@ -46,22 +46,11 @@ class BrowserBase(ABC):
         for window in browser_window_data:
             for tab in window.get("tabs"):
                 browser_tab_data.append(tab)
-
-        print(f"Read a total of {len(browser_tab_data)} tabs from '{this.__class__.__name__}'")
+        print(
+            f"Read a total of {len(browser_tab_data)} tabs from '{this.__class__.__name__}'"
+        )
         return browser_tab_data
 
     @abstractmethod
     def parse_session_file(this, file_path: str) -> list:
         raise NotImplementedError()
-
-    def _find_files(this, path: str) -> list:
-        """
-        Finds files within given path while allowing relative linux like glob paths to be used.
-
-        Replaces `~` with the users home directory, rest of the glob syntax is explained within the
-        documentation; https://docs.python.org/3.8/library/glob.html
-        """
-        if path.startswith("~"):
-            path = path.replace("~", os.path.expanduser("~"), 1)
-
-        return glob.glob(path)
