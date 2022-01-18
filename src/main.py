@@ -43,7 +43,7 @@ class Main:
         if os.path.isfile(this.tab_logging):
             with open(this.tab_logging, "at") as logFile:
                 logFile.write(
-                    f"{time.time()}{seperator}" +
+                    f"{int(time.time())}{seperator}" +
                     f"{window_count}{seperator}" +
                     f"{tab_count}{os.linesep}"
                 )
