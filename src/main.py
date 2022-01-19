@@ -22,7 +22,10 @@ class Main:
                 this.logActivity(this.browsers.countWindows(), tab_count)
                 time.sleep(60)
         except KeyboardInterrupt:
-            pass
+            # Final log update before shutdown
+            this.logActivity(this.browsers.countWindows(),
+                             this.browsers.countTabs())
+            exit(0)
 
     def updateStatus(this, tab_count: int):
         if (tab_count > 0):
