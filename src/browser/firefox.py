@@ -7,7 +7,7 @@ class Firefox(BrowserBase):
     def __init__(this):
         this.application_name = "GeckoMain"
         this.possible_tab_locations = [
-            "~/.mozilla/firefox*/*.default/sessionstore-backups/recovery.jsonlz4"  # Firefox GNU/Linux
+            "~/.mozilla/firefox*/*.default*/sessionstore-backups/recovery.jsonlz4",  # Firefox GNU/Linux (Ubuntu & Fedora tested)
         ]
 
     def isRunning(this) -> bool:
