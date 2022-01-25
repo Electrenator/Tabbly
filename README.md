@@ -9,4 +9,4 @@ A program that shows your tab count within Discord via rich presence. Currently 
 - [x] Add tab / window count logging for personal statistics over time.
 - [ ] Allow auto startup on boot.
 - [ ] Pause presence when another program tries to presence.
-- [ ] Handle exceptions when Discord client is not open or gets closed.
+- [x] Handle exceptions when Discord client is not open or gets closed.
