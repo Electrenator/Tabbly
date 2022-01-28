@@ -3,7 +3,7 @@ import sys
 import os
 from browsers import Browsers
 from discordPresence import DiscordPresence
-from filesystem import Filesystem
+import filesystem
 
 
 class Main:
@@ -52,7 +52,7 @@ class Main:
                 )
             return
         # File does not exist yet -> make it
-        Filesystem.assure_location(this.tab_logging)
+        filesystem.assure_location(this.tab_logging)
         with open(this.tab_logging, "xt") as logFile:
             logFile.write(
                 f"'UNIX timestamp'{seperator}" +

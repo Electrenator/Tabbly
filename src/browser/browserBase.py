@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess
-from filesystem import Filesystem
+import filesystem
 
 
 class BrowserBase(ABC):
-    @abstractmethod
     def __init__(this):
         this.application_name = None
         this.possible_tab_locations = None
@@ -39,7 +38,7 @@ class BrowserBase(ABC):
         if this.possible_tab_locations == None:
             raise NotImplementedError()
 
-        session_files = Filesystem.find_files(this.possible_tab_locations[0])
+        session_files = filesystem.find_files(this.possible_tab_locations[0])
         browser_window_data = []
 
         for file_path in session_files:
