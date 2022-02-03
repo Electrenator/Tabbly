@@ -1,3 +1,5 @@
 [MASTER]
 jobs=0
 persistent=yes
+fail-under=9
+disable=no-self-argument
