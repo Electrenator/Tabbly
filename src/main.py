@@ -2,7 +2,7 @@ import time
 import sys
 import os
 from browsers import Browsers
-from discordPresence import DiscordPresence
+from discord_presence import DiscordPresence
 import filesystem
 
 
@@ -17,18 +17,18 @@ class Main:
     def start(this):
         try:
             while True:
-                tab_count = this.browsers.countTabs()
-                this.updateStatus(tab_count)
-                this.logActivity(this.browsers.countWindows(), tab_count)
+                tab_count = this.browsers.count_tabs()
+                this.update_status(tab_count)
+                this.log_activity(this.browsers.count_windows(), tab_count)
                 time.sleep(60)
         except KeyboardInterrupt:
             # Final log update before shutdown
-            this.logActivity(this.browsers.countWindows(),
-                             this.browsers.countTabs())
+            this.log_activity(this.browsers.count_windows(),
+                             this.browsers.count_tabs())
             exit(0)
 
-    def updateStatus(this, tab_count: int):
-        if (tab_count > 0):
+    def update_status(this, tab_count: int):
+        if tab_count > 0:
             this.presence.resume()
             status = (
                 f"Using the power of {tab_count} tab"
@@ -40,12 +40,12 @@ class Main:
             print("No tabs detected")
             this.presence.pause()
 
-    def logActivity(this, window_count: int, tab_count: int):
+    def log_activity(this, window_count: int, tab_count: int):
         seperator = ';'
 
         if os.path.isfile(this.tab_logging):
-            with open(this.tab_logging, "at") as logFile:
-                logFile.write(
+            with open(this.tab_logging, "at", encoding="UTF-8") as log_file:
+                log_file.write(
                     f"{int(time.time())}{seperator}" +
                     f"{window_count}{seperator}" +
                     f"{tab_count}{os.linesep}"
@@ -53,14 +53,14 @@ class Main:
             return
         # File does not exist yet -> make it
         filesystem.assure_location(this.tab_logging)
-        with open(this.tab_logging, "xt") as logFile:
-            logFile.write(
+        with open(this.tab_logging, "xt", encoding="UTF-8") as log_file:
+            log_file.write(
                 f"'UNIX timestamp'{seperator}" +
                 f"'Total window count'{seperator}" +
                 f"'Total tab count'{os.linesep}"
             )
         # File is created -> Now really write log file
-        this.logActivity(window_count, tab_count)
+        this.log_activity(window_count, tab_count)
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ class DiscordPresence:
         this._is_connected = False
         this._update_retries = 0
 
-        this._RPC = Presence(client_id)
+        this._presence_connection = Presence(client_id)
         print("Created Presence instance")
 
         # Try to make a first connection
@@ -30,11 +30,11 @@ class DiscordPresence:
     def resume(this):
         if not this._is_connected:
             try:
-                this._RPC.connect()
+                this._presence_connection.connect()
                 this._is_connected = True
                 print("Connected to Presence")
                 this._update_retries = 0
-            except ConnectionRefusedError or ConnectionResetError:
+            except (ConnectionRefusedError, ConnectionResetError):
                 print(
                     "Unable to connect to Presence (Discord is probably closed)",
                     file=sys.stderr
@@ -51,7 +51,7 @@ class DiscordPresence:
 
         if this._is_connected:
             try:
-                return this._RPC.update(state=state)
+                return this._presence_connection.update(state=state)
             except InvalidID:
                 this._is_connected = False
                 print("Presence suddenly disconnected", file=sys.stderr)
@@ -59,7 +59,7 @@ class DiscordPresence:
                 # Retry adding status
                 return this.update(state)
 
-        if (this._update_retries >= this._max_retries):
+        if this._update_retries >= this._max_retries:
             return None
 
         # Try connecing until this._max_retries
@@ -67,7 +67,8 @@ class DiscordPresence:
         this._update_retries += 1
         print(
             "Trying to reconnect " +
-            f"({this._update_retries} of {this._max_retries} tries)" if this._update_retries != 0 else "",
+            f"({this._update_retries} of {this._max_retries} tries)" if this._update_retries != 0
+            else "",
             file=sys.stderr
         )
         this.resume()
@@ -75,7 +76,7 @@ class DiscordPresence:
 
     def pause(this):
         if this._is_connected:
-            this._RPC.close()
+            this._presence_connection.close()
             this._is_connected = False
             print("Closed connection to Presence")
 

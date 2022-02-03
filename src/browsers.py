@@ -1,9 +1,10 @@
 from browser.firefox import Firefox
+from browser.chrome import Chrome
 
 
 class Browsers:
-    def countTabs(this) -> int:
-        return len(Firefox().getTabs() if Firefox().isRunning() else [])
+    def count_tabs(this) -> int:
+        return len(Firefox().get_tabs() if Firefox().is_running() else [])
 
-    def countWindows(this) -> int:
-        return len(Firefox().getWindows() if Firefox().isRunning() else [])
+    def count_windows(this) -> int:
+        return len(Firefox().get_windows() if Firefox().is_running() else [])
