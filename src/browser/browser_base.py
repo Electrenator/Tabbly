@@ -17,7 +17,7 @@ class BrowserBase(ABC):
         Returns:
             true if the process is detected to be active, false if not.
         """
-        if this.application_name is not None:
+        if this.application_name is None:
             raise NotImplementedError()
 
         for process in process_iter():
@@ -35,7 +35,7 @@ class BrowserBase(ABC):
             A list of active browser windows for this browser. A window usually
             has one or more `tabs` within itself.
         """
-        if this.possible_tab_locations is not None:
+        if this.possible_tab_locations is None:
             raise NotImplementedError()
 
         session_files = filesystem.find_files(this.possible_tab_locations[0])
