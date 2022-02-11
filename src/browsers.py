@@ -1,5 +1,4 @@
 from browser.firefox import Firefox
-from browser.chrome import Chrome
 
 
 class Browsers:
