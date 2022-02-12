@@ -4,7 +4,7 @@ gitdb==4.0.9
 GitPython==3.1.26
 glob2==0.7
 lz4==3.1.10
-pbr==5.8.0
+pbr==5.8.1
 psutil==5.9.0
 pycodestyle==2.8.0
 pylint==2.12.2
