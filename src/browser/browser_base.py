@@ -5,25 +5,26 @@ import filesystem
 
 class BrowserBase(ABC):
     def __init__(this):
-        this.application_name = None
+        this.possible_application_names = None
         this.possible_tab_locations = None
 
     @abstractmethod
     def is_running(this) -> bool:
         """
-        Checks if this browser is running by searching for the `application_name`
+        Checks if this browser is running by searching for the `possible_application_names`
         within the active programs.
 
         Returns:
             true if the process is detected to be active, false if not.
         """
-        if this.application_name is None:
+        if this.possible_application_names is None:
             raise NotImplementedError()
 
         for process in process_iter():
             try:
-                if this.application_name in process.name():
-                    return True
+                for name in this.possible_application_names:
+                    if name in process.name():
+                        return True
             except (NoSuchProcess, AccessDenied, ZombieProcess):
                 pass
         return False
