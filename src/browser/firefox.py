@@ -7,9 +7,14 @@ from browser.browser_base import BrowserBase
 class Firefox(BrowserBase):
     def __init__(this):
         super().__init__()
-        this.application_name = "GeckoMain"
-        this.possible_tab_locations = [
+        this.possible_application_names = [
             # Firefox GNU/Linux (Ubuntu & Fedora tested)
+            "GeckoMain",
+            # Firefox GNU/Linux (Manjaro tested)
+            "firefox"
+        ]
+        this.possible_tab_locations = [
+            # Firefox GNU/Linux (Ubuntu, Fedora & Manjaro tested)
             "~/.mozilla/firefox*/*.default*/sessionstore-backups/recovery.jsonlz4",
         ]
 
