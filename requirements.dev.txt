@@ -7,7 +7,7 @@ lz4==3.1.10
 pbr==5.8.1
 psutil==5.9.0
 pycodestyle==2.8.0
-pylint==2.12.2
+pylint==2.13.0
 pypresence==4.2.1
 PyYAML==6.0
 smmap==5.0.0
