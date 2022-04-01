@@ -1,15 +1,2 @@
-autopep8==1.6.0
 bandit==1.7.2
-gitdb==4.0.9
-GitPython==3.1.26
-glob2==0.7
-lz4==4.0.0
-pbr==5.8.1
-psutil==5.9.0
-pycodestyle==2.8.0
 pylint==2.12.2
-pypresence==4.2.1
-PyYAML==6.0
-smmap==5.0.0
-stevedore==3.5.0
-toml==0.10.2

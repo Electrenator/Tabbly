@@ -24,7 +24,7 @@ class Main:
         except KeyboardInterrupt:
             # Final log update before shutdown
             this.log_activity(this.browsers.count_windows(),
-                             this.browsers.count_tabs())
+                              this.browsers.count_tabs())
             exit(0)
 
     def update_status(this, tab_count: int):
