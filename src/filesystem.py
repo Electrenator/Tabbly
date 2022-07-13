@@ -1,3 +1,6 @@
+"""
+This module stores all functions related to filesystem operations written for Tabbly.
+"""
 import glob
 import os
 from re import sub
@@ -36,8 +39,9 @@ def assure_location(file_path: str, dry_run: bool = False):
     else:
         print(f"Would have created directory '{parent_dir_path}'")
 
-def file_name_converter(input: str):
+
+def file_name_converter(name_string: str):
     """
-    Returns a UpperCamelCase version of a given string to use as for file names.
+    Returns a UpperCamelCase version of a given name_string to use as for file names.
     """
-    return sub(r"(-|_)+", "", input.title())
+    return sub(r"(-|_)+", "", name_string.title())
