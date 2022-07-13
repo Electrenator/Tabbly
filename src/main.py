@@ -3,14 +3,18 @@ import sys
 import os
 from browsers import Browsers
 from discord_presence import DiscordPresence
-import filesystem
+from filesystem import assure_location, file_name_converter
+import platform
 
 
 class Main:
     def __init__(this, *arg, **kwargs):
         print(this, arg, kwargs)
         this.client_id = "924638024346791986"
-        this.tab_logging = "log/tabUsage.csv"
+        this.tab_logging = ("log/tabUsage" +
+            (f"On{file_name_converter(platform.node())}" if len(platform.node()) > 0 else "") +
+            ".csv"
+        )
         this.presence = DiscordPresence(this.client_id)
         this.browsers = Browsers()
 
@@ -52,7 +56,7 @@ class Main:
                 )
             return
         # File does not exist yet -> make it
-        filesystem.assure_location(this.tab_logging)
+        assure_location(this.tab_logging)
         with open(this.tab_logging, "xt", encoding="UTF-8") as log_file:
             log_file.write(
                 f"'UNIX timestamp'{seperator}" +

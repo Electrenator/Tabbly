@@ -1,5 +1,6 @@
 import glob
 import os
+from re import sub
 
 
 def find_files(path: str) -> list:
@@ -34,3 +35,9 @@ def assure_location(file_path: str, dry_run: bool = False):
             pass
     else:
         print(f"Would have created directory '{parent_dir_path}'")
+
+def file_name_converter(input: str):
+    """
+    Returns a UpperCamelCase version of a given string to use as for file names.
+    """
+    return sub(r"(-|_)+", "", input.title())
