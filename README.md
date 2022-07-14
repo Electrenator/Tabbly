@@ -21,6 +21,12 @@ pip install -r requirements.txt
 ```
 Now you can run `python src/main.py` to start running the program.
 
+
+Note: When you want to contribute, you should probably also add the dev dependencies so pylint and black can be used during development. This can be done in the venv described above using the following command.
+```bash
+pip install -r requirements.dev.txt
+```
+
 ## Todo
 - [x] Display testing presence on Discord
 - [x] Get basic tab amount from a browser and display that
@@ -28,5 +34,5 @@ Now you can run `python src/main.py` to start running the program.
 - [ ] Add support for more browsers. Should be able to count at the same time.
 - [x] Add tab / window count logging for personal statistics over time.
 - [ ] Allow auto startup on boot.
-- [ ] Pause presence when another program tries to presence.
+- [ ] Pause presence when another program tries to show it's presence.
 - [x] Handle exceptions when Discord client is not open or gets closed.

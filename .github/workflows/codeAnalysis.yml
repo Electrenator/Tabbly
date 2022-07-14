@@ -1,6 +1,8 @@
 name: Code analysis
 
-on: [push]
+on: 
+  push:
+    paths: ['src/**', '.github/**/*']
 
 jobs:
   analysis:
