@@ -81,7 +81,8 @@ class _BrowserBase(ABC):
             for window in this.parse_session_file(file_path):
                 browser_window_data.append(window)
         print(
-            f"Read a total of {len(browser_window_data)} windows from '{this.__class__.__name__}'"
+            f"Read a total of {len(browser_window_data)} window"
+            + f" from '{this.__class__.__name__.replace('_', '')}'."
         )
         return browser_window_data
 
@@ -99,7 +100,8 @@ class _BrowserBase(ABC):
             for tab in window.get("tabs"):
                 browser_tab_data.append(tab)
         print(
-            f"Read a total of {len(browser_tab_data)} tabs from '{this.__class__.__name__}'"
+            f"Read a total of {len(browser_window_data)} tabs"
+            + f" from '{this.__class__.__name__.replace('_', '')}'."
         )
         return browser_tab_data
 
