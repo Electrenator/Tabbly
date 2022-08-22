@@ -17,8 +17,7 @@ class Main:
     instead of directly run.
     """
 
-    def __init__(this, *arg, **kwargs):
-        print(this, arg, kwargs)
+    def __init__(this):
         this.client_id = "924638024346791986"
         this.tab_logging = (
             "log/tabUsage"
@@ -60,7 +59,7 @@ class Main:
                 + ("s" if tab_count != 1 else "")
                 + " 📑"
             )
-            print(this.presence.update(status))
+            this.presence.update(status)
         else:
             print("No tabs detected")
             this.presence.pause()
@@ -93,5 +92,5 @@ class Main:
 
 
 if __name__ == "__main__":
-    app = Main(sys.argv)
+    app = Main()
     app.start()

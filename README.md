@@ -38,3 +38,4 @@ pip install -r requirements.dev.txt
 - [ ] Allow auto startup on boot.
 - [ ] Pause presence when another program tries to show it's presence.
 - [x] Handle exceptions when Discord client is not open or gets closed.
+- [ ] Allow `-v` or `--verbose` arguments for extended output instead of that by default

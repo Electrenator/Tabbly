@@ -89,10 +89,12 @@ class DiscordPresence:
         time.sleep(seconds_between_retry)
         this._update_retries += 1
         print(
-            "Trying to reconnect "
-            + f"({this._update_retries} of {this._max_retries} tries)"
-            if this._update_retries != 0
-            else "",
+            (
+                "Trying to reconnect "
+                + f"({this._update_retries} of {this._max_retries} tries)..."
+                if this._update_retries != 0
+                else "..."
+            ),
             file=sys.stderr,
         )
         this.resume()

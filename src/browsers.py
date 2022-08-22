@@ -115,7 +115,7 @@ class _BrowserBase(ABC):
 
 class _Firefox(_BrowserBase):
     """
-    Firefox specific browser d
+    Firefox specific browser data
     """
 
     def __init__(this):
