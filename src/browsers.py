@@ -2,16 +2,13 @@
 Module to interact with browsers and gether every necessary browser detail to show
 the usage count. Only the Browsers class it's getters need to be public for Tabbly
 program to run.
-
-TODO(Electrenator): Make a module class so every browser outputs data within
-the same format. Not doing that will definitely be a problem when reading usage
-from multiple browsers
 """
 from abc import ABC, abstractmethod
 import json
 from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess
 import lz4.block
 import filesystem
+from models import BrowserData
 
 
 class Browsers:
@@ -24,13 +21,13 @@ class Browsers:
         """
         Getter for the detected tab count.
         """
-        return len(_Firefox().get_tabs() if _Firefox().is_running() else [])
+        return _Firefox().get_tabs() if _Firefox().is_running() else 0
 
     def count_windows(this) -> int:
         """
         Getter for the detected window count.
         """
-        return len(_Firefox().get_windows() if _Firefox().is_running() else [])
+        return _Firefox().get_windows() if _Firefox().is_running() else 0
 
 
 class _BrowserBase(ABC):
@@ -65,7 +62,7 @@ class _BrowserBase(ABC):
         return False
 
     @abstractmethod
-    def get_windows(this) -> list:
+    def get_windows(this) -> list[int]:
         """
         Returns:
             A list of active browser windows for this browser. A window usually
@@ -78,8 +75,8 @@ class _BrowserBase(ABC):
         browser_window_data = []
 
         for file_path in session_files:
-            for window in this.parse_session_file(file_path):
-                browser_window_data.append(window)
+            browser_window_data = this.parse_session_file(file_path).get_data()
+
         print(
             f"Read a total of {len(browser_window_data)} window"
             + f" from '{this.__class__.__name__.replace('_', '')}'."
@@ -87,40 +84,31 @@ class _BrowserBase(ABC):
         return browser_window_data
 
     @abstractmethod
-    def get_tabs(this) -> list:
+    def get_tabs(this) -> int:
         """
         Returns:
-            a list of all the active browser tabs within this browser. This is a
-            concatenation of all the tabs open within all the windows.
+            a count of all the active browser tabs within this browser. This is a
+            summary of all the tabs open within all the windows.
         """
         browser_window_data = this.get_windows()
-        browser_tab_data = []
+        tab_count = 0
 
         for window in browser_window_data:
-            for tab in window.get("tabs"):
-                browser_tab_data.append(tab)
+            tab_count += window
+
         print(
-            f"Read a total of {len(browser_window_data)} tabs"
+            f"Read a total of {tab_count} tabs"
             + f" from '{this.__class__.__name__.replace('_', '')}'."
         )
-        return browser_tab_data
+        return tab_count
 
     @abstractmethod
-    def parse_session_file(this, file_path: str) -> list:
+    def parse_session_file(this, file_path: str) -> BrowserData:
         """
         Parses a browsers session file within `this.possible_tab_locations` for windows
         and tabs. This is browser specific and should be written for every browser subclass.
 
-        Returns:
-            A object with the following structure::
-
-                {
-                    "windows": [
-                        {
-                            "tabs": [...]
-                        }
-                    ]
-                }
+        Returns: An filled BrowserData object
         """
         raise NotImplementedError()
 
@@ -152,19 +140,26 @@ class _Firefox(_BrowserBase):
     def get_tabs(this) -> list:
         return super().get_tabs()
 
-    def parse_session_file(this, file_path: str) -> list:
+    def parse_session_file(this, file_path: str) -> BrowserData:
+        raw_browser_data = ""
+        browser_data = BrowserData()
+
+        # Read and decode file data
         with open(file_path, "rb") as file:
             if file_path.find("firefox") != -1:
                 file.read(8)  # ignore first firefox ID b"mozLz40\0"
 
-            file_data = file.read()
+            # Read and decompress file
+            file_data_raw = file.read()
+            file_data = lz4.block.decompress(file_data_raw).decode("utf-8")
 
-            if file_path.endswith("lz4"):
-                file_data = lz4.block.decompress(file_data).decode("utf-8")
+            # Load inner json
+            raw_browser_data = json.loads(file_data)
 
-            browser_data = json.loads(file_data)
-            window_data = browser_data.get("windows")
+        # Read and insert window data into BrowserData object
+        window_data = raw_browser_data.get("windows")
+        for window in window_data:
+            # Selected is a ready to use tab count within the window object
+            browser_data.add_window(window["selected"])
 
-            # browser_data json in at least following format from here
-            # -> {"windows": [{"tabs": [...]}]}
-            return window_data if window_data is not None else []
+        return browser_data
