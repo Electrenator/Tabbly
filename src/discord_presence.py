@@ -19,21 +19,21 @@ class DiscordPresence:
         this._max_retries = 3
         this._is_connected = False
         this._update_retries = 0
-
-        this._presence_connection = Presence(client_id)
-        print("Created Presence instance")
+        this._presence_connection = None
 
         # Try to make a first connection
         try:
+            this._presence_connection = Presence(client_id)
+            print("Created Presence instance")
+
             this.resume()
-        except DiscordNotFound as ex:
-            traceback.print_exception(type(ex), ex, ex.__traceback__, file=sys.stderr)
+        except DiscordNotFound:
             print(
-                "Discord doesn't seem to be installed, so I can't update"
-                + " your status. Please install Discord so I can do my work :)",
+                "Discord doesn't seem to be installed, so I can't update "
+                + "your status. Please install Discord so I can do my work "
+                + "to the fullest potential. Limiting to file logging for now :)",
                 file=sys.stderr,
             )
-            sys.exit(-1)
 
     def resume(this):
         """
@@ -41,8 +41,11 @@ class DiscordPresence:
         connected. Does also handle known connectivity issues related to it and
         prints the unknown ones.
         Sets a connected class state when a connection was established.
+
+        Will ignore resume requests when no presence connection was established
+        to allow for file logging without presence working.
         """
-        if not this._is_connected:
+        if not this._is_connected and this._presence_connection is not None:
             try:
                 this._presence_connection.connect()
                 this._is_connected = True
@@ -68,7 +71,8 @@ class DiscordPresence:
 
         If there ever is a connection error while updating, it retries the class
         specified amount of times before giving up and setting the class to a
-        disconnected state.
+        disconnected state. Except for when no connection was established while
+        starting Tabbly, in which case it will not retry.
         """
         seconds_between_retry = 1
 
@@ -82,7 +86,7 @@ class DiscordPresence:
                 # Retry adding status
                 return this.update(state)
 
-        if this._update_retries >= this._max_retries:
+        if this._update_retries >= this._max_retries or this._presence_connection is None:
             return None
 
         # Try connecing until this._max_retries
