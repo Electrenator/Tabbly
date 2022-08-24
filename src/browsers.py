@@ -27,7 +27,17 @@ class Browsers:
         """
         Getter for the detected window count.
         """
-        return _Firefox().get_windows() if _Firefox().is_running() else 0
+        return len(_Firefox().get_windows()) if _Firefox().is_running() else 0
+
+    def get_windows(this) -> list[int]:
+        """
+        Getter for getting the total tabs per window
+
+        Returns:
+            list[int]: Returns a list where every entry is a window and the
+            associated value is the tab count
+        """
+        return _Firefox().get_windows() if _Firefox().is_running() else []
 
 
 class _BrowserBase(ABC):

@@ -40,11 +40,19 @@ class Main:
             while True:
                 tab_count = this.browsers.count_tabs()
                 this.update_status(tab_count)
-                this.log_activity(this.browsers.count_windows(), tab_count)
+                this.log_activity(
+                    this.browsers.count_windows(),
+                    tab_count,
+                    this.browsers.get_windows(),
+                )
                 time.sleep(60)
         except KeyboardInterrupt:
             # Final log update before shutdown
-            this.log_activity(this.browsers.count_windows(), this.browsers.count_tabs())
+            this.log_activity(
+                this.browsers.count_windows(),
+                this.browsers.count_tabs(),
+                this.browsers.get_windows(),
+            )
             sys.exit(0)
 
     def update_status(this, tab_count: int):
@@ -64,7 +72,7 @@ class Main:
             print("No tabs detected")
             this.presence.pause()
 
-    def log_activity(this, window_count: int, tab_count: int):
+    def log_activity(this, window_count: int, tab_count: int, window_data: list[int]):
         """
         This function logs the browser usage activity to a csv log file specified
         within the __init__.
@@ -76,19 +84,23 @@ class Main:
                 log_file.write(
                     f"{int(time.time())}{separator}"
                     + f"{window_count}{separator}"
-                    + f"{tab_count}{os.linesep}"
+                    + f"{tab_count}{separator}"
+                    + f"{window_data}{os.linesep}"
                 )
             return
+
         # File does not exist yet -> make it
         assure_location(this.tab_logging)
         with open(this.tab_logging, "xt", encoding="UTF-8") as log_file:
             log_file.write(
                 f"'UNIX timestamp'{separator}"
                 + f"'Total window count'{separator}"
-                + f"'Total tab count'{os.linesep}"
+                + f"'Total tab count'{separator}"
+                + f"'List of total tabs per window'{os.linesep}"
             )
+
         # File is created -> Now really write log file
-        this.log_activity(window_count, tab_count)
+        this.log_activity(window_count, tab_count, window_data)
 
 
 if __name__ == "__main__":
