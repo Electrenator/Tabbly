@@ -169,7 +169,8 @@ class _Firefox(_BrowserBase):
         # Read and insert window data into BrowserData object
         window_data = raw_browser_data.get("windows")
         for window in window_data:
-            # Selected is a ready to use tab count within the window object
-            browser_data.add_window(window["selected"])
+            # Calculates tabs from the saved window object itself since the given
+            # "Selected" value appears to be inaccurate with lots of tabs open.
+            browser_data.add_window(len(window["tabs"]))
 
         return browser_data
