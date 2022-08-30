@@ -17,7 +17,7 @@ class DiscordPresence:
 
     def __init__(this, client_id: int):
         this._max_retries = 3
-        this._is_connected = False
+        this.is_connected = False
         this._update_retries = 0
         this._presence_connection = None
 
@@ -29,11 +29,14 @@ class DiscordPresence:
             this.resume()
         except DiscordNotFound:
             print(
-                "Discord doesn't seem to be installed, so I can't update "
-                + "your status. Please install Discord so I can do my work "
-                + "to the fullest potential. Limiting to file logging for now :)",
+                "Discord doesn't seem to be open or installed, so I can't update "
+                + "your status. Please install and open Discord so I can do my work "
+                + "to the fullest potential. Limiting to file logging for now until "
+                + "Discord is detected :)",
                 file=sys.stderr,
             )
+            this._update_retries = this._max_retries
+            this._client_id = client_id
 
     def resume(this):
         """
@@ -45,10 +48,16 @@ class DiscordPresence:
         Will ignore resume requests when no presence connection was established
         to allow for file logging without presence working.
         """
-        if not this._is_connected and this._presence_connection is not None:
+        if this._presence_connection is None:
+            try:
+                this._presence_connection = Presence(this._client_id)
+            except DiscordNotFound:
+                return
+
+        if not this.is_connected:
             try:
                 this._presence_connection.connect()
-                this._is_connected = True
+                this.is_connected = True
                 print("Connected to Presence")
                 this._update_retries = 0
             except (ConnectionRefusedError, ConnectionResetError):
@@ -58,7 +67,8 @@ class DiscordPresence:
                 )
             except DiscordError as ex:
                 # Print and pass. Mostly being thrown on temporary discord states
-                # like with not being logged in etc
+                # like with not being logged in etc. Should be handles when new
+                # ones are found though
                 traceback.print_exception(
                     type(ex), ex, ex.__traceback__, file=sys.stderr
                 )
@@ -76,20 +86,20 @@ class DiscordPresence:
         """
         seconds_between_retry = 1
 
-        if this._is_connected:
+        if this.is_connected:
             try:
                 return this._presence_connection.update(state=state)
             except InvalidID:
-                this._is_connected = False
+                this.is_connected = False
                 print("Presence suddenly disconnected", file=sys.stderr)
 
                 # Retry adding status
                 return this.update(state)
 
-        if this._update_retries >= this._max_retries or this._presence_connection is None:
+        if this._update_retries >= this._max_retries:
             return None
 
-        # Try connecing until this._max_retries
+        # Try connecting until this._max_retries
         time.sleep(seconds_between_retry)
         this._update_retries += 1
         print(
@@ -108,12 +118,12 @@ class DiscordPresence:
         """
         Disconnects from the presence API and sets the class disconnected state.
         """
-        if this._is_connected:
+        if this.is_connected:
             this._presence_connection.close()
-            this._is_connected = False
+            this.is_connected = False
             print("Closed connection to Presence")
 
     def __del__(this):
-        if this._is_connected:
+        if this.is_connected:
             this.pause()
         print("Closed Presence instance")

@@ -61,7 +61,8 @@ class Main:
         presence.
         """
         if tab_count > 0:
-            this.presence.resume()
+            if not this.presence.is_connected:
+                this.presence.resume()
             status = (
                 f"Using the power of {tab_count} tab"
                 + ("s" if tab_count != 1 else "")
@@ -70,7 +71,8 @@ class Main:
             this.presence.update(status)
         else:
             print("No tabs detected")
-            this.presence.pause()
+            if this.presence.is_connected:
+                this.presence.pause()
 
     def log_activity(this, window_count: int, tab_count: int, window_data: list[int]):
         """
