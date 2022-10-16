@@ -26,16 +26,3 @@ Note: When you want to contribute, you should probably also add the dev dependen
 ```bash
 pip install -r requirements.dev.txt
 ```
-
-## Todo
-- [x] Display testing presence on Discord
-- [x] Get basic tab amount from a browser and display that
-- [x] Only count tabs when browser is open.
-- [ ] Add support for more browsers. Should be able to count at the same time.
-  - [x] Add model for browser data output
-  - [ ] Add Chromium support
-- [x] Add tab / window count logging for personal statistics over time.
-- [ ] Allow auto startup on boot.
-- [ ] Pause presence when another program tries to show it's presence.
-- [x] Handle exceptions when Discord client is not open or gets closed.
-- [ ] Allow `-v` or `--verbose` arguments for extended output instead of that by default
