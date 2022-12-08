@@ -8,12 +8,19 @@ You will firstly need to have the following things installed and have access to 
 - Python 3
 - Python 3 PIP
 
+### TL;DR
+Use this command;
+```bash
+python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python src/main.py; deactivate
+```
+
+### Full explenation
 After installing that, you will need a virtual environment for python to run in. This can be created and entered with the following command on GNU/Linux. It may be necessary to type `python3` instead of `python` if you also have Python version 2 installed.
 ```bash
 python -m venv venv
 source venv/bin/activate
 ```
-Note: this virtual environment can be deactivated with `deactivate`.
+Note: this virtual environment can be deactivated with the `deactivate` command and cleaned up after by just removing the `venv` folder.
 
 Finally you will need to install the dependencies of this program. This can be done with the following command but `pip` may need to be replaced with `pip3` depending on what's installed on your PC.
 ```bash
