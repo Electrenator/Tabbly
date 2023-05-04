@@ -5,6 +5,7 @@ import time
 import sys
 import os
 import platform
+from typing import Final  # Since python 3.8!
 from browsers import Browsers
 from discord_presence import DiscordPresence
 from filesystem import assure_location, file_name_converter
@@ -16,6 +17,8 @@ class Main:
     prevents things from executing when this file is imported as dependency
     instead of directly run.
     """
+
+    UPDATE_CHECK_INTERVAL_SECONDS: Final[int] = 60
 
     def __init__(this):
         this.client_id = "924638024346791986"
@@ -30,22 +33,18 @@ class Main:
         )
         this.presence = DiscordPresence(this.client_id)
         this.browsers = Browsers()
+        this.previous_tab_count: None | int = None
 
     def start(this):
         """
-        Main entry point of the program after init. Houses the program loop that
+        Main entry point LOOP of the program after init. Houses the looping project logic
         will run while the program is active.
         """
         try:
-            while True:
-                tab_count = this.browsers.count_tabs()
-                this.update_status(tab_count)
-                this.log_activity(
-                    this.browsers.count_windows(),
-                    tab_count,
-                    this.browsers.get_windows(),
-                )
-                time.sleep(60)
+            while True: # Main program loop
+                this._loop()
+                time.sleep(this.UPDATE_CHECK_INTERVAL_SECONDS)
+
         except KeyboardInterrupt:
             # Final log update before shutdown
             this.log_activity(
@@ -55,24 +54,46 @@ class Main:
             )
             sys.exit(0)
 
+    def _loop(this):
+        """
+        This is the logic which will run with within the program loop. This function will
+        repeatedly be called while the program runs.
+        """
+        tab_count = this.browsers.count_tabs()
+
+        if tab_count == this.previous_tab_count:
+            return
+
+        print("Tab change detected!")
+        this.previous_tab_count = tab_count
+
+        this.update_status(tab_count)
+        this.log_activity(
+            this.browsers.count_windows(),
+            tab_count,
+            this.browsers.get_windows(),
+        )
+
     def update_status(this, tab_count: int):
         """
         This function updates the tab use status to the given tab_count within
         presence.
         """
-        if tab_count > 0:
-            if not this.presence.is_connected:
-                this.presence.resume()
-            status = (
-                f"Using the power of {tab_count} tab"
-                + ("s" if tab_count != 1 else "")
-                + " 📑"
-            )
-            this.presence.update(status)
-        else:
+        if tab_count <= 0:
             print("No tabs detected")
             if this.presence.is_connected:
                 this.presence.pause()
+            return
+
+        if not this.presence.is_connected:
+            this.presence.resume()
+
+        status = (
+            f"Using the power of {tab_count} tab"
+            + ("s" if tab_count != 1 else "")
+            + " 📑"
+        )
+        this.presence.update(status)
 
     def log_activity(this, window_count: int, tab_count: int, window_data: list[int]):
         """
