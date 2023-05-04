@@ -1,0 +1,26 @@
+# Docs; https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# For every file
+[*]
+insert_final_newline = true     # Adds a blank line at the end of each file
+charset = utf-8                 # Encodes every text file in UTF-8
+trim_trailing_whitespace = true # Remove space characters before new lines
+indent_style = tab              # Configure tab indentation
+indent_size = 4                 # x spaces = 1 tab
+
+# for shell files
+[*.sh]
+end_of_line = lf
+
+# For Yaml config files
+[*.yml]
+indent_style = space
+indent_size = 2
+
+# For MarkDown files
+[*.md]
+# 2 spaced at line end are needed for paragraph seperation
+trim_trailing_whitespace = false
