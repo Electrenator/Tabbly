@@ -5,16 +5,16 @@ A program for showing your tab usage within Discord's rich presence and to log t
 
 ## How to run
 You will firstly need to have the following things installed and have access to a terminal within the project's folder.
-- Python 3
-- Python 3 PIP
+- Python 3.8+
+- Python 3.8+ PIP
 
 ### TL;DR
-Use this command;
+Use the following command **And** make sure `Display current activity as a status message.` is enabled within the privacy settings!
 ```bash
 python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python src/main.py; deactivate
 ```
 
-### Full explenation
+### Full explanation
 After installing that, you will need a virtual environment for python to run in. This can be created and entered with the following command on GNU/Linux. It may be necessary to type `python3` instead of `python` if you also have Python version 2 installed.
 ```bash
 python -m venv venv
@@ -26,7 +26,7 @@ Finally you will need to install the dependencies of this program. This can be d
 ```bash
 pip install -r requirements.txt
 ```
-Now you can run `python src/main.py` to start running the program.
+Now you can run `python src/main.py` to start running the program. The only thing you need to make sure of now is that the `Display current activity as a status message.` setting is enabled within Discord. Tabbly won't show anything if it isn't.
 
 
 Note: When you want to contribute, you should probably also add the dev dependencies so pylint and black can be used during development. This can be done in the venv described above using the following command.
