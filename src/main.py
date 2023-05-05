@@ -41,7 +41,7 @@ class Main:
         will run while the program is active.
         """
         try:
-            while True: # Main program loop
+            while True:  # Main program loop
                 this._loop()
                 time.sleep(this.UPDATE_CHECK_INTERVAL_SECONDS)
 

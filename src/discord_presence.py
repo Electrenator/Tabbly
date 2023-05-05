@@ -126,4 +126,5 @@ class DiscordPresence:
     def __del__(this):
         if this.is_connected:
             this.pause()
-        print("Closed Presence instance")
+
+        print("Removed Presence instance")

@@ -15,6 +15,7 @@ def find_files(path: str) -> list:
     """
     if path.startswith("~"):
         path = path.replace("~", os.path.expanduser("~"), 1)
+
     return glob.glob(path)
 
 
@@ -31,6 +32,7 @@ def assure_location(file_path: str, dry_run: bool = False):
     file_path = os.path.realpath(file_path)
     file_name = os.path.basename(file_path)
     parent_dir_path = file_path.replace(file_name, "")
+
     if not dry_run:
         try:
             os.makedirs(parent_dir_path)
