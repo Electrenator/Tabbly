@@ -24,3 +24,7 @@ indent_size = 2
 [*.md]
 # 2 spaced at line end are needed for paragraph seperation
 trim_trailing_whitespace = false
+
+# For Python files
+[*.py]
+indent_style = space # Per PEP 8 style guild
