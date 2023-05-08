@@ -5,6 +5,7 @@ import time
 import sys
 import os
 import platform
+from signal import signal, SIGTERM
 from typing import Final  # Since python 3.8!
 from browsers import Browsers
 from discord_presence import DiscordPresence
@@ -47,6 +48,7 @@ class Main:
 
         except KeyboardInterrupt:
             # Final log update before shutdown
+            print("Stopping program...")
             this.log_activity(
                 this.browsers.count_windows(),
                 this.browsers.count_tabs(),
@@ -126,6 +128,16 @@ class Main:
         this.log_activity(window_count, tab_count, window_data)
 
 
+def exit_now(*args):
+    """
+    This function defines what should be done on on a Linux system shutdown. Windows already sends
+    a CTRL-C event as far a I can find.
+    """
+    raise KeyboardInterrupt()
+
+
 if __name__ == "__main__":
+    signal(SIGTERM, exit_now) # What to do on terminate request
+
     app = Main()
     app.start()
