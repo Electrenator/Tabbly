@@ -1,4 +1,4 @@
 [MASTER]
 jobs=0
 persistent=yes
-disable=no-self-argument
+disable=no-self-argument, too-few-public-methods

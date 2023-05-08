@@ -49,11 +49,7 @@ class Main:
         except KeyboardInterrupt:
             # Final log update before shutdown
             print("Stopping program...")
-            this.log_activity(
-                this.browsers.count_windows(),
-                this.browsers.count_tabs(),
-                this.browsers.get_windows(),
-            )
+            this.log_activity(this.browsers.get_windows())
             sys.exit(0)
 
     def _loop(this):
@@ -61,20 +57,16 @@ class Main:
         This is the logic which will run with within the program loop. This function will
         repeatedly be called while the program runs.
         """
-        tab_count = this.browsers.count_tabs()
+        window_data = this.browsers.get_windows()
 
-        if tab_count == this.previous_tab_count:
+        if window_data == this.previous_tab_count:
             return
 
-        print("Tab change detected!")
-        this.previous_tab_count = tab_count
+        print("browser change detected!")
+        this.previous_tab_count = window_data
 
-        this.update_status(tab_count)
-        this.log_activity(
-            this.browsers.count_windows(),
-            tab_count,
-            this.browsers.get_windows(),
-        )
+        this.update_status(sum(window_data))
+        this.log_activity(window_data)
 
     def update_status(this, tab_count: int):
         """
@@ -97,35 +89,33 @@ class Main:
         )
         this.presence.update(status)
 
-    def log_activity(this, window_count: int, tab_count: int, window_data: list[int]):
+    def log_activity(this, window_data: list[int]):
         """
         This function logs the browser usage activity to a csv log file specified
         within the __init__.
         """
         separator = ";"
+        window_count = len(window_data)
+        tab_count = sum(window_data)
 
-        if os.path.isfile(this.tab_logging):
-            with open(this.tab_logging, "at", encoding="UTF-8") as log_file:
+        if not os.path.isfile(this.tab_logging):
+            # File does not exist yet -> make it
+            assure_location(this.tab_logging)
+            with open(this.tab_logging, "xt", encoding="UTF-8") as log_file:
                 log_file.write(
-                    f"{int(time.time())}{separator}"
-                    + f"{window_count}{separator}"
-                    + f"{tab_count}{separator}"
-                    + f"{window_data}{os.linesep}"
+                    f"'UNIX timestamp'{separator}"
+                    + f"'Total window count'{separator}"
+                    + f"'Total tab count'{separator}"
+                    + f"'List of total tabs per window'{os.linesep}"
                 )
-            return
 
-        # File does not exist yet -> make it
-        assure_location(this.tab_logging)
-        with open(this.tab_logging, "xt", encoding="UTF-8") as log_file:
+        with open(this.tab_logging, "at", encoding="UTF-8") as log_file:
             log_file.write(
-                f"'UNIX timestamp'{separator}"
-                + f"'Total window count'{separator}"
-                + f"'Total tab count'{separator}"
-                + f"'List of total tabs per window'{os.linesep}"
+                f"{int(time.time())}{separator}"
+                + f"{window_count}{separator}"
+                + f"{tab_count}{separator}"
+                + f"{window_data}{os.linesep}"
             )
-
-        # File is created -> Now really write log file
-        this.log_activity(window_count, tab_count, window_data)
 
 
 def exit_now(*args):
@@ -137,7 +127,7 @@ def exit_now(*args):
 
 
 if __name__ == "__main__":
-    signal(SIGTERM, exit_now) # What to do on terminate request
+    signal(SIGTERM, exit_now)  # What to do on terminate request
 
     app = Main()
     app.start()

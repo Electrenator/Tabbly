@@ -17,18 +17,6 @@ class Browsers:
     supported, browsers.
     """
 
-    def count_tabs(this) -> int:
-        """
-        Getter for the detected tab count.
-        """
-        return _Firefox().get_tabs() if _Firefox().is_running() else 0
-
-    def count_windows(this) -> int:
-        """
-        Getter for the detected window count.
-        """
-        return len(_Firefox().get_windows()) if _Firefox().is_running() else 0
-
     def get_windows(this) -> list[int]:
         """
         Getter for getting the total tabs per window
@@ -87,30 +75,8 @@ class _BrowserBase(ABC):
         for file_path in session_files:
             browser_window_data = this.parse_session_file(file_path).get_data()
 
-        print(
-            f"Read a total of {len(browser_window_data)} window"
-            + f" from '{this.__class__.__name__.replace('_', '')}'."
-        )
+        print(f"Read {browser_window_data} from '{this.__class__.__name__.replace('_', '')}'.")
         return browser_window_data
-
-    @abstractmethod
-    def get_tabs(this) -> int:
-        """
-        Returns:
-            a count of all the active browser tabs within this browser. This is a
-            summary of all the tabs open within all the windows.
-        """
-        browser_window_data = this.get_windows()
-        tab_count = 0
-
-        for window in browser_window_data:
-            tab_count += window
-
-        print(
-            f"Read a total of {tab_count} tabs"
-            + f" from '{this.__class__.__name__.replace('_', '')}'."
-        )
-        return tab_count
 
     @abstractmethod
     def parse_session_file(this, file_path: str) -> BrowserData:
@@ -146,9 +112,6 @@ class _Firefox(_BrowserBase):
 
     def get_windows(this) -> list:
         return super().get_windows()
-
-    def get_tabs(this) -> list:
-        return super().get_tabs()
 
     def parse_session_file(this, file_path: str) -> BrowserData:
         raw_browser_data = ""
