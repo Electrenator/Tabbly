@@ -52,6 +52,7 @@ class DiscordPresence:
             try:
                 this._presence_connection = Presence(this._client_id)
             except DiscordNotFound:
+                print("Unable to detect Discord", file=sys.stderr)
                 return
 
         if not this.is_connected:

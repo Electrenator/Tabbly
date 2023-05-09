@@ -62,7 +62,7 @@ class Main:
         if window_data == this.previous_tab_count:
             return
 
-        print("browser change detected!")
+        print("Browser change detected!")
         this.previous_tab_count = window_data
 
         this.update_status(sum(window_data))
