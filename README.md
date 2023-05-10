@@ -1,5 +1,5 @@
 # Tabbly
-A program for showing your tab usage within Discord's rich presence and to log that usage. Currently only supports usage on Firefox within GNU/Linux.
+A program for showing your tab usage within Discord's rich presence and to log that usage. Currently only supports usage on Firefox within GNU/Linux. If you want to help bring this little script to your OS of choice, don't be afraid to create a pull request :)
 
 ![Tabbly in use within Discord. The application is displaying the usage of 83 active browser tabs.](https://user-images.githubusercontent.com/18311389/151074155-78ccf239-5127-4e7a-8380-f7038ade6338.png)
 
@@ -9,7 +9,7 @@ You will firstly need to have the following things installed and have access to 
 - Python 3.8+ PIP
 
 ### TL;DR
-Use the following command **And** make sure `Display current activity as a status message.` is enabled within the privacy settings!
+Use the following command within bash **And** make sure `Display current activity as a status message.` is enabled within the privacy settings!
 ```bash
 python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python src/main.py; deactivate
 ```
