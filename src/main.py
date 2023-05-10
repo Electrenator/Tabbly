@@ -68,6 +68,9 @@ class Main:
         this.update_status(sum(window_data))
         this.log_activity(window_data)
 
+        # Flush the output to the next pipe. Would only do that on shutdown if unset
+        sys.stdout.flush()
+
     def update_status(this, tab_count: int):
         """
         This function updates the tab use status to the given tab_count within
