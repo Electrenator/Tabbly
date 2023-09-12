@@ -5,12 +5,13 @@ import time
 import sys
 import os
 import platform
-from argparse import ArgumentParser
 from signal import signal, SIGTERM
 from typing import Final  # Since python 3.8!
+
 from browsers import Browsers
 from discord_presence import DiscordPresence
 from filesystem import assure_location, file_name_converter
+from models import Setting
 
 
 class Main:
@@ -130,27 +131,9 @@ def exit_now(*args):
     raise KeyboardInterrupt()
 
 
-def init_parser() -> ArgumentParser:
-    parser = ArgumentParser(
-        # prog="Tabbly",
-        description="A program for showing your browser tab usage within Discord's rich presence "
-        + " and to log that usage.",
-        epilog="Project source can be found over at; https://github.com/Electrenator/Tabbly",
-    )
-    parser.add_argument(
-        "-v", "--verbose", action="store_true", help="show extended console output"
-    )
-    return parser
-
-
 if __name__ == "__main__":
     signal(SIGTERM, exit_now)  # What to do on terminate request
-
-    args = init_parser().parse_args()
-    print(args)
-    print(vars(args))
-
-    print(f"verbose -> {args.verbose}")
+    Setting.readFromArguments()
 
     app = Main()
     app.start()

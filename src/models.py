@@ -1,6 +1,9 @@
 """
 File for all the data used models within the Tabbly project.
 """
+from abc import ABC, abstractmethod
+
+from utilities import init_parser
 
 
 class BrowserData:
@@ -42,3 +45,22 @@ class BrowserData:
             this window.
         """
         return this.windows
+
+
+class Setting(ABC):
+    """
+    Saves all application settings. Some may be read in from the given arguments,
+    some may be set by the program itself.
+    """
+
+    verbose: bool = False
+
+    @staticmethod
+    @abstractmethod
+    def readFromArguments():
+        arguments = init_parser().parse_args()
+
+        Setting.verbose = arguments.verbose
+
+        if Setting.verbose:
+            print("Used arguments:", vars(arguments))
