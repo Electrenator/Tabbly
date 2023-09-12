@@ -51,9 +51,14 @@ class Setting(ABC):
     """
     Saves all application settings. Some may be read in from the given arguments,
     some may be set by the program itself.
+
+    Available settings:
+        verbose -> give extended output
+        dry_run -> Does't actually write outputs to file or Discord
     """
 
     verbose: bool = False
+    dry_run: bool = False
 
     @staticmethod
     @abstractmethod
@@ -64,6 +69,7 @@ class Setting(ABC):
         arguments = get_environment_arguments()
 
         Setting.verbose = arguments.verbose
+        Setting.dry_run = arguments.dry_run
 
         if Setting.verbose:
             print("Used arguments:", vars(arguments))

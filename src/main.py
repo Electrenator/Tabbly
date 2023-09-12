@@ -108,6 +108,9 @@ class Main:
         window_count = len(window_data)
         tab_count = sum(window_data)
 
+        if Setting.dry_run:
+            return
+
         if not os.path.isfile(this.tab_logging):
             # File does not exist yet -> make it
             assure_location(this.tab_logging)

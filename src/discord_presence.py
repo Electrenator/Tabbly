@@ -93,7 +93,7 @@ class DiscordPresence:
         """
         seconds_between_retry = 1
 
-        if this.is_connected:
+        if this.is_connected and not Setting.dry_run:
             try:
                 return this._presence_connection.update(state=state)
             except InvalidID:
@@ -103,7 +103,7 @@ class DiscordPresence:
                 # Retry adding status
                 return this.update(state)
 
-        if this._update_retries >= this._max_retries:
+        if this._update_retries >= this._max_retries or Setting.dry_run:
             return None
 
         # Try connecting until this._max_retries

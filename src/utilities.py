@@ -17,6 +17,11 @@ def get_environment_arguments() -> Namespace:
         allow_abbrev=False,
     )
     parser.add_argument(
-        "-v", "--verbose", action="store_true", help="show extended console output"
+        "-v", "--verbose", action="store_true", help="show extended console output."
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Does't actually write outputs to a file or Discord.",
     )
     return parser.parse_args()
