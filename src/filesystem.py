@@ -41,7 +41,7 @@ def assure_location(file_path: str, dry_run: bool = False):
         except FileExistsError:
             pass
     else:
-        if (Setting.verbose):
+        if Setting.verbose:
             print(f"Would have created directory '{parent_dir_path}'")
 
 

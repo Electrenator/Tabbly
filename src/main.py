@@ -50,7 +50,7 @@ class Main:
 
         except KeyboardInterrupt:
             # Final log update before shutdown
-            if (Setting.verbose):
+            if Setting.verbose:
                 print("Stopping program...")
 
             this.log_activity(this.browsers.get_windows())
@@ -66,7 +66,7 @@ class Main:
         if window_data == this.previous_tab_count:
             return
 
-        if (Setting.verbose):
+        if Setting.verbose:
             print("Browser change detected!")
 
         this.previous_tab_count = window_data
@@ -82,7 +82,7 @@ class Main:
         presence.
         """
         if tab_count <= 0:
-            if (Setting.verbose):
+            if Setting.verbose:
                 print("No tabs detected")
 
             if this.presence.is_connected:
