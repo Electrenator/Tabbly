@@ -7,9 +7,11 @@ import os
 import platform
 from signal import signal, SIGTERM
 from typing import Final  # Since python 3.8!
+
 from browsers import Browsers
 from discord_presence import DiscordPresence
 from filesystem import assure_location, file_name_converter
+from models import Setting
 
 
 class Main:
@@ -48,7 +50,9 @@ class Main:
 
         except KeyboardInterrupt:
             # Final log update before shutdown
-            print("Stopping program...")
+            if Setting.verbose:
+                print("Stopping program...")
+
             this.log_activity(this.browsers.get_windows())
             sys.exit(0)
 
@@ -62,11 +66,15 @@ class Main:
         if window_data == this.previous_tab_count:
             return
 
-        print("Browser change detected!")
-        this.previous_tab_count = window_data
+        if Setting.verbose:
+            print("Browser change detected!")
 
+        this.previous_tab_count = window_data
         this.update_status(sum(window_data))
         this.log_activity(window_data)
+
+        # Flush the output to the next pipe. Would only do that on shutdown if unset
+        sys.stdout.flush()
 
     def update_status(this, tab_count: int):
         """
@@ -74,7 +82,9 @@ class Main:
         presence.
         """
         if tab_count <= 0:
-            print("No tabs detected")
+            if Setting.verbose:
+                print("No tabs detected")
+
             if this.presence.is_connected:
                 this.presence.pause()
             return
@@ -128,6 +138,7 @@ def exit_now(*args):
 
 if __name__ == "__main__":
     signal(SIGTERM, exit_now)  # What to do on terminate request
+    Setting.read_from_arguments()
 
     app = Main()
     app.start()

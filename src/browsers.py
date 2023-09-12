@@ -8,7 +8,8 @@ import json
 from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess
 import lz4.block
 import filesystem
-from models import BrowserData
+
+from models import BrowserData, Setting
 
 
 class Browsers:
@@ -75,7 +76,10 @@ class _BrowserBase(ABC):
         for file_path in session_files:
             browser_window_data = this.parse_session_file(file_path).get_data()
 
-        print(f"Read {browser_window_data} from '{this.__class__.__name__.replace('_', '')}'.")
+        if Setting.verbose:
+            class_name = this.__class__.__name__.replace("_", "")
+            print(f"Read {browser_window_data} from '{class_name}'.")
+
         return browser_window_data
 
     @abstractmethod

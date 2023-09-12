@@ -1,6 +1,9 @@
 """
 File for all the data used models within the Tabbly project.
 """
+from abc import ABC, abstractmethod
+
+from utilities import get_environment_arguments
 
 
 class BrowserData:
@@ -42,3 +45,25 @@ class BrowserData:
             this window.
         """
         return this.windows
+
+
+class Setting(ABC):
+    """
+    Saves all application settings. Some may be read in from the given arguments,
+    some may be set by the program itself.
+    """
+
+    verbose: bool = False
+
+    @staticmethod
+    @abstractmethod
+    def read_from_arguments():
+        """
+        Reads settings from out out of the CLI arguments the program received.
+        """
+        arguments = get_environment_arguments()
+
+        Setting.verbose = arguments.verbose
+
+        if Setting.verbose:
+            print("Used arguments:", vars(arguments))
