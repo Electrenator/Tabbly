@@ -3,7 +3,7 @@ File for all the data used models within the Tabbly project.
 """
 from abc import ABC, abstractmethod
 
-from utilities import init_parser
+from utilities import get_environment_arguments
 
 
 class BrowserData:
@@ -57,8 +57,11 @@ class Setting(ABC):
 
     @staticmethod
     @abstractmethod
-    def readFromArguments():
-        arguments = init_parser().parse_args()
+    def read_from_arguments():
+        """
+        Reads settings from out out of the CLI arguments the program received.
+        """
+        arguments = get_environment_arguments()
 
         Setting.verbose = arguments.verbose
 

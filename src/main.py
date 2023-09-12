@@ -138,7 +138,7 @@ def exit_now(*args):
 
 if __name__ == "__main__":
     signal(SIGTERM, exit_now)  # What to do on terminate request
-    Setting.readFromArguments()
+    Setting.read_from_arguments()
 
     app = Main()
     app.start()
