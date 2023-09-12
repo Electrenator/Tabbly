@@ -5,6 +5,8 @@ import glob
 import os
 from re import sub
 
+from models import Setting
+
 
 def find_files(path: str) -> list:
     """
@@ -39,7 +41,8 @@ def assure_location(file_path: str, dry_run: bool = False):
         except FileExistsError:
             pass
     else:
-        print(f"Would have created directory '{parent_dir_path}'")
+        if (Setting.verbose):
+            print(f"Would have created directory '{parent_dir_path}'")
 
 
 def file_name_converter(name_string: str):

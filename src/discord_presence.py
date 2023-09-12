@@ -8,6 +8,8 @@ import traceback
 from pypresence import Presence
 from pypresence.exceptions import InvalidID, DiscordError, DiscordNotFound
 
+from models import Setting
+
 
 class DiscordPresence:
     """
@@ -24,7 +26,8 @@ class DiscordPresence:
         # Try to make a first connection
         try:
             this._presence_connection = Presence(client_id)
-            print("Created Presence instance")
+            if Setting.verbose:
+                print("Created Presence instance")
 
             this.resume()
         except DiscordNotFound:
@@ -59,8 +62,11 @@ class DiscordPresence:
             try:
                 this._presence_connection.connect()
                 this.is_connected = True
-                print("Connected to Presence")
                 this._update_retries = 0
+
+                if Setting.verbose:
+                    print("Connected to Presence")
+
             except (ConnectionRefusedError, ConnectionResetError):
                 print(
                     "Unable to connect to Presence (Discord is probably closed)",
@@ -122,10 +128,13 @@ class DiscordPresence:
         if this.is_connected:
             this._presence_connection.close()
             this.is_connected = False
-            print("Closed connection to Presence")
+
+            if Setting.verbose:
+                print("Closed connection to Presence")
 
     def __del__(this):
         if this.is_connected:
             this.pause()
 
-        print("Removed Presence instance")
+        if Setting.verbose:
+            print("Removed Presence instance")
