@@ -26,7 +26,7 @@ class Browsers:
             list[int]: Returns a list where every entry is a window and the
             associated value is the tab count
         """
-        return _Firefox().get_windows() if _Firefox().is_running() else []
+        return _Chromium().get_windows() if _Chromium().is_running() else []
 
 
 class _BrowserBase(ABC):
@@ -139,5 +139,40 @@ class _Firefox(_BrowserBase):
             # Calculates tabs from the saved window object itself since the given
             # "Selected" value appears to be inaccurate with lots of tabs open.
             browser_data.add_window(len(window["tabs"]))
+
+        return browser_data
+
+class _Chromium(_BrowserBase):
+    """
+    Chromium specific browser data
+    """
+
+    def __init__(this):
+        super().__init__()
+        this.possible_application_names = [
+            # Chromium GNU/Linux
+            "chromium",
+        ]
+        this.possible_tab_locations = [
+            # Chromium GNU/Linux ???
+            "~/.config/chromium/Default/Sessions/",
+        ]
+
+    def is_running(this) -> bool:
+        return super().is_running()
+
+    def get_windows(this) -> list:
+        return super().get_windows()
+
+    def parse_session_file(this, file_path: str) -> BrowserData:
+        raw_browser_data = ""
+        browser_data = BrowserData()
+
+        # Read and decode file data
+        print(file_path)
+        # with open(file_path, "rb") as file:
+            # pass
+
+        # Read and insert window data into BrowserData object
 
         return browser_data
