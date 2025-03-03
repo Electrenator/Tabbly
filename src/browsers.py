@@ -70,7 +70,7 @@ class _BrowserBase(ABC):
         if this.possible_tab_locations is None:
             raise NotImplementedError()
 
-        session_files = filesystem.find_files(this.possible_tab_locations[0])
+        session_files = filesystem.find_files(this.possible_tab_locations)
         browser_window_data = []
 
         for file_path in session_files:
@@ -105,10 +105,14 @@ class _Firefox(_BrowserBase):
             "GeckoMain",
             # Firefox GNU/Linux (Manjaro tested)
             "firefox",
+            # Firefox Windows 11
+            "firefox.exe",
         ]
         this.possible_tab_locations = [
             # Firefox GNU/Linux (Ubuntu, Fedora & Manjaro tested)
             "~/.mozilla/firefox*/*.default*/sessionstore-backups/recovery.jsonlz4",
+            # Firefox Windows 11
+            "%APPDATA%/Mozilla/Firefox/Profiles/*.default*/sessionstore-backups/recovery.jsonlz4",
         ]
 
     def is_running(this) -> bool:

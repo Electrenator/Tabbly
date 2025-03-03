@@ -8,17 +8,27 @@ from re import sub
 from models import Setting
 
 
-def find_files(path: str) -> list:
+def find_files(path: str | list) -> list:
     """
-    Finds files within given path while allowing relative linux like glob paths to be used.
+    Finds files within given path while allowing relative linux like glob paths to be used and also
+    variables like %APPDATA%.
 
     Replaces `~` with the users home directory, rest of the glob syntax is explained within the
     documentation; https://docs.python.org/3.8/library/glob.html
     """
-    if path.startswith("~"):
-        path = path.replace("~", os.path.expanduser("~"), 1)
+    expanded_paths = []
+    path = path if (type(path) is list) else [path]
 
-    return glob.glob(path)
+    for compact_path in path:
+        if compact_path.startswith("~"):
+            compact_path = compact_path.replace("~", os.path.expanduser("~"), 1)
+
+        compact_path = os.path.expandvars(compact_path)
+        expanded_paths += glob.glob(compact_path)
+
+    if Setting.verbose:
+        print(f"Detected paths; {expanded_paths}")
+    return expanded_paths
 
 
 def assure_location(file_path: str, dry_run: bool = False):
