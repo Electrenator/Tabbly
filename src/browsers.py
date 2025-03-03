@@ -55,6 +55,8 @@ class _BrowserBase(ABC):
             try:
                 for name in this.possible_application_names:
                     if name in process.name():
+                        if Setting.verbose:
+                            print(f"{this.__class__} seems to be running!")
                         return True
             except (NoSuchProcess, AccessDenied, ZombieProcess):
                 pass
