@@ -10,21 +10,31 @@ type FirefoxBrowser struct {
 func GetFirefoxBrowser() Browser {
 	return &FirefoxBrowser{
 		&AbstractBrowser{
-			typicalName:              "Firefox",
-			possibleApplicationNames: nil,
-			storageLocations:         nil,
+			typicalName: "Firefox",
+			processAliases: []string{
+				// Firefox GNU/Linux used on:
+				// - Ubuntu …?
+				// - Fedora …?
+				"GeckoMain",
+				// Firefox GNU/Linux used on:
+				// - Manjaro 25.0.0 (Zetar)
+				"firefox",
+			},
+			storageLocations: nil,
 		},
 		0.00001,
 	}
 }
 
 func (browser *FirefoxBrowser) GetInfo() BrowserInfo {
-	other := fmt.Sprintf("%f", browser.test)
-	fmt.Println(other)
 	return BrowserInfo{
 		browser.typicalName,
 		browser.isActive(),
 		browser.getWindowData(),
-		other,
+		fmt.Sprintf("%f", browser.test),
 	}
+}
+
+func (browser *FirefoxBrowser) getWindowData() []WindowInfo {
+	return []WindowInfo{}
 }

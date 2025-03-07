@@ -8,9 +8,9 @@ type TesterBrowser struct {
 func GetTesterBrowser() Browser {
 	return &TesterBrowser{
 		&AbstractBrowser{
-			typicalName:              "browser",
-			possibleApplicationNames: nil,
-			storageLocations:         nil,
+			typicalName:      "browser",
+			processAliases:   nil,
+			storageLocations: nil,
 		},
 	}
 }
@@ -21,4 +21,8 @@ func (browser *TesterBrowser) GetInfo() BrowserInfo {
 	info.isOpen = browser.isActive()
 	info.windows = browser.getWindowData()
 	return info
+}
+
+func (browser *TesterBrowser) getWindowData() []WindowInfo {
+	return []WindowInfo{}
 }
