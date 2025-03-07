@@ -3,6 +3,7 @@ package browser
 import (
 	"fmt"
 	"log/slog"
+	"path/filepath"
 	"reflect"
 
 	"github.com/Electrenator/Tabbly/src-go/util"
@@ -46,7 +47,7 @@ func (browser *AbstractBrowser) isActive() bool {
 
 		for _, needle := range browser.processAliases {
 			if util.StringContains(name, needle) {
-				slog.Info(fmt.Sprintf("Found %d - %s", pid, name))
+				slog.Info(fmt.Sprintf("Found %s as process %d", name, pid))
 				return true
 			}
 		}
@@ -57,7 +58,39 @@ func (browser *AbstractBrowser) isActive() bool {
 
 func (browser *AbstractBrowser) getWindowData() []WindowInfo {
 	panic(fmt.Sprintf(
-		"Browser '%s' is unimplemented!",
+		"Browser '%s' (%s) is unimplemented!",
 		reflect.TypeOf(browser).String(),
+		browser.typicalName,
 	))
+}
+
+func (browser *AbstractBrowser) getSessionStorageLocation() []string {
+	var expandedPaths []string
+
+	for _, pattern := range browser.storageLocations {
+		pattern, err := util.ExpandHomeDirectory(pattern)
+		if err != nil {
+			slog.Error(
+				"Can't get current user for '~' expansion",
+				"error", err,
+			)
+		}
+		foundPaths, err := filepath.Glob(pattern)
+		if err != nil {
+			slog.Error(
+				"Can't expand glob pattern",
+				"pattern", pattern,
+				"error", err,
+			)
+		}
+		expandedPaths = append(expandedPaths, foundPaths...)
+	}
+	if len(expandedPaths) > 0 {
+		slog.Info(fmt.Sprintf(
+			"(%s) Detected browser storage: %+v",
+			browser.typicalName,
+			expandedPaths,
+		))
+	}
+	return expandedPaths
 }

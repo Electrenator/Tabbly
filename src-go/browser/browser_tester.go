@@ -16,11 +16,11 @@ func GetTesterBrowser() Browser {
 }
 
 func (browser *TesterBrowser) GetInfo() BrowserInfo {
-	var info BrowserInfo
-	info.name = browser.typicalName
-	info.isOpen = browser.isActive()
-	info.windows = browser.getWindowData()
-	return info
+	return BrowserInfo{
+		browser.typicalName,
+		browser.isActive(),
+		browser.getWindowData(),
+	}
 }
 
 func (browser *TesterBrowser) getWindowData() []WindowInfo {

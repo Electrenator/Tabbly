@@ -4,7 +4,6 @@ type BrowserInfo struct {
 	name    string
 	isOpen  bool
 	windows []WindowInfo
-	other   string
 }
 
 type WindowInfo struct {

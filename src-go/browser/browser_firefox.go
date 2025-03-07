@@ -1,10 +1,7 @@
 package browser
 
-import "fmt"
-
 type FirefoxBrowser struct {
 	*AbstractBrowser
-	test float32
 }
 
 func GetFirefoxBrowser() Browser {
@@ -20,9 +17,14 @@ func GetFirefoxBrowser() Browser {
 				// - Manjaro 25.0.0 (Zetar)
 				"firefox",
 			},
-			storageLocations: nil,
+			storageLocations: []string{
+				// Firefox GNU/Linux seen on:
+				// - Ubuntu ?
+				// - Fedora ?
+				// - Manjaro 25.0.0 (Zetar)
+				"~/.mozilla/firefox*/*.default*/sessionstore-backups/recovery.jsonlz4",
+			},
 		},
-		0.00001,
 	}
 }
 
@@ -31,10 +33,11 @@ func (browser *FirefoxBrowser) GetInfo() BrowserInfo {
 		browser.typicalName,
 		browser.isActive(),
 		browser.getWindowData(),
-		fmt.Sprintf("%f", browser.test),
 	}
 }
 
 func (browser *FirefoxBrowser) getWindowData() []WindowInfo {
+	_ = browser.getSessionStorageLocation()
+	// Go some magic~
 	return []WindowInfo{}
 }
