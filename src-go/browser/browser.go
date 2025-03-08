@@ -12,7 +12,7 @@ import (
 
 type Browser interface {
 	GetInfo() BrowserInfo
-	isActive() bool
+	isActive() BrowserState
 	getWindowData() []WindowInfo
 }
 
@@ -23,7 +23,7 @@ type AbstractBrowser struct {
 	storageLocations []string
 }
 
-func (browser *AbstractBrowser) isActive() bool {
+func (browser *AbstractBrowser) isActive() BrowserState {
 	pids, err := process.Pids()
 
 	if err != nil {
@@ -31,7 +31,7 @@ func (browser *AbstractBrowser) isActive() bool {
 			"Can't find system processes? -",
 			"error", err,
 		)
-		return false
+		return BROWSER_CLOSED
 	}
 
 	for _, pid := range pids {
@@ -48,12 +48,12 @@ func (browser *AbstractBrowser) isActive() bool {
 		for _, needle := range browser.processAliases {
 			if util.StringContains(name, needle) {
 				slog.Info(fmt.Sprintf("Found %s as process %d", name, pid))
-				return true
+				return BROWSER_OPEN
 			}
 		}
 	}
 
-	return false
+	return BROWSER_CLOSED
 }
 
 func (browser *AbstractBrowser) getWindowData() []WindowInfo {
