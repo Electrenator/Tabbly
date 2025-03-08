@@ -14,9 +14,8 @@ require (
 	github.com/ebitengine/purego v0.8.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/itchyny/timefmt-go v0.1.6 // indirect
-	github.com/kr/pretty v0.3.1 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
-	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
+	github.com/pierrec/lz4/v4 v4.1.22 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
@@ -24,4 +23,4 @@ require (
 	golang.org/x/sys v0.28.0 // indirect
 )
 
-replace github.com/giulianopz/go-dejsonlz4 => github.com/electrenator/go-jsonlz4 v0.0.0-20250307235108-9a003674386d
+replace github.com/giulianopz/go-dejsonlz4 => github.com/electrenator/go-jsonlz4 v0.0.0-20250308135914-f66713c6d6bf
