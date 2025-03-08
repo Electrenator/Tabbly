@@ -1,12 +1,14 @@
 package browser
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"os"
 
 	"github.com/dustin/go-humanize"
 	"github.com/giulianopz/go-dejsonlz4/jsonlz4"
+	"github.com/itchyny/gojq"
 )
 
 type FirefoxBrowser struct {
@@ -80,7 +82,25 @@ func (browser *FirefoxBrowser) getWindowData() []WindowInfo {
 			humanize.IBytes(uint64(len(data))),
 		))
 
-		fmt.Printf("%s\n", data)
+		jsonValues := make(map[string]interface{})
+		json.Unmarshal(data, &jsonValues)
+
+		query, err := gojq.Parse(".windows | map(.tabs | length)")
+		if err != nil {
+			slog.Error("Unable to parse jq", "error", err)
+			continue
+		}
+
+		resultIterator := query.Run(jsonValues)
+		for {
+			item, ok := resultIterator.Next()
+			if !ok {
+				break
+			}
+
+			printJson, _ := json.MarshalIndent(item, "", "  ")
+			fmt.Println(string(printJson))
+		}
 	}
 
 	// Go some magic~
