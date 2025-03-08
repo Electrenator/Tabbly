@@ -7,7 +7,7 @@ type BrowserInfo struct {
 }
 
 type WindowInfo struct {
-	openTabs int
+	tabCount int
 }
 
 type BrowserState int

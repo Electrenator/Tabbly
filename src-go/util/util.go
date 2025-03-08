@@ -31,3 +31,14 @@ func FileSize(filePath string) int64 {
 	}
 	return stats.Size()
 }
+
+// Converts a list of any into a list of the given type
+//
+// From https://stackoverflow.com/a/24454401/13042236
+func ConvertSlice[E any](in []any) (out []E) {
+	out = make([]E, 0, len(in))
+	for _, v := range in {
+		out = append(out, v.(E))
+	}
+	return
+}

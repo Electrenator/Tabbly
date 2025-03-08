@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/Electrenator/Tabbly/src-go/util"
 	"github.com/dustin/go-humanize"
 	"github.com/giulianopz/go-dejsonlz4/jsonlz4"
 	"github.com/itchyny/gojq"
@@ -33,7 +34,7 @@ func GetFirefoxBrowser() Browser {
 				// - Ubuntu ?
 				// - Fedora ?
 				// - Manjaro 25.0.0 (Zetar)
-				"~/.mozilla/firefox*/*.default*/sessionstore-backups/recovery.jsonlz4",
+				"~/.mozilla/firefox*/*.default-release/sessionstore-backups/recovery.jsonlz4",
 			},
 		},
 	}
@@ -93,16 +94,20 @@ func (browser *FirefoxBrowser) getWindowData() []WindowInfo {
 
 		resultIterator := query.Run(jsonValues)
 		for {
-			item, ok := resultIterator.Next()
+			resultItem, ok := resultIterator.Next()
 			if !ok {
 				break
 			}
 
-			printJson, _ := json.MarshalIndent(item, "", "  ")
-			fmt.Println(string(printJson))
+			resultValues := util.ConvertSlice[int](resultItem.([]any))
+			resultWindows := make([]WindowInfo, len(resultValues))
+
+			for i, tab := range resultValues {
+				resultWindows[i] = WindowInfo{tab}
+			}
+			windowData = append(windowData, resultWindows...)
 		}
 	}
 
-	// Go some magic~
 	return windowData
 }
