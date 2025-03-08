@@ -1,5 +1,14 @@
 package browser
 
+import (
+	"fmt"
+	"log/slog"
+	"os"
+
+	"github.com/dustin/go-humanize"
+	"github.com/giulianopz/go-dejsonlz4/jsonlz4"
+)
+
 type FirefoxBrowser struct {
 	*AbstractBrowser
 }
@@ -29,15 +38,51 @@ func GetFirefoxBrowser() Browser {
 }
 
 func (browser *FirefoxBrowser) GetInfo() BrowserInfo {
+	var active bool
+	var windowData []WindowInfo
+	if active = browser.isActive(); active {
+		windowData = browser.getWindowData()
+	}
 	return BrowserInfo{
 		browser.typicalName,
-		browser.isActive(),
-		browser.getWindowData(),
+		active,
+		windowData,
 	}
 }
 
 func (browser *FirefoxBrowser) getWindowData() []WindowInfo {
-	_ = browser.getSessionStorageLocation()
+	var windowData []WindowInfo
+
+	for _, path := range browser.getSessionStorageLocation() {
+		fileData, err := os.ReadFile(path)
+		if err != nil {
+			slog.Error(
+				"Can't read file",
+				"path", path,
+				"error", err,
+			)
+			continue
+		}
+
+		data, err := jsonlz4.Uncompress(fileData)
+		if err != nil {
+			slog.Error(
+				"Can't decompress file for reading",
+				"path", path,
+				"error", err,
+			)
+			continue
+		}
+		slog.Info(fmt.Sprintf(
+			"Decompressed %s of size %s (%s uncompressed)",
+			path,
+			humanize.IBytes(uint64(len(fileData))),
+			humanize.IBytes(uint64(len(data))),
+		))
+
+		fmt.Printf("%s\n", data)
+	}
+
 	// Go some magic~
-	return []WindowInfo{}
+	return windowData
 }
