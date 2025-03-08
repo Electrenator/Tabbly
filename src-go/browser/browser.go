@@ -10,9 +10,10 @@ import (
 )
 
 type Browser interface {
-	GetInfo() BrowserInfo
-	isActive() BrowserState
-	getWindowData() []WindowInfo
+	GetName() string
+	GetState() BrowserState
+	GatherInfo() BrowserInfo
+	GetherWindowData() []WindowInfo
 }
 
 type AbstractBrowser struct {
@@ -22,7 +23,10 @@ type AbstractBrowser struct {
 	storageLocations []string
 }
 
-func (browser *AbstractBrowser) isActive() BrowserState {
+func (browser *AbstractBrowser) GetState() BrowserState {
+	if len(browser.processAliases) == 0 {
+		return BROWSER_STATE_UNKNOWN
+	}
 	pids, err := process.Pids()
 
 	if err != nil {
@@ -53,6 +57,10 @@ func (browser *AbstractBrowser) isActive() BrowserState {
 	}
 
 	return BROWSER_CLOSED
+}
+
+func (browser *AbstractBrowser) GetName() string {
+	return browser.typicalName
 }
 
 func (browser *AbstractBrowser) getSessionStorageLocation() []string {

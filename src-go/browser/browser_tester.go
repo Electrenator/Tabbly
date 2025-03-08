@@ -15,14 +15,14 @@ func GetTesterBrowser() Browser {
 	}
 }
 
-func (browser *TesterBrowser) GetInfo() BrowserInfo {
+func (browser *TesterBrowser) GatherInfo() BrowserInfo {
 	return BrowserInfo{
 		browser.typicalName,
 		BROWSER_STATE_UNKNOWN,
-		browser.getWindowData(),
+		browser.GetherWindowData(),
 	}
 }
 
-func (browser *TesterBrowser) getWindowData() []WindowInfo {
+func (browser *TesterBrowser) GetherWindowData() []WindowInfo {
 	return []WindowInfo{}
 }

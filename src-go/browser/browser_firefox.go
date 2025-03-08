@@ -40,12 +40,12 @@ func GetFirefoxBrowser() Browser {
 	}
 }
 
-func (browser *FirefoxBrowser) GetInfo() BrowserInfo {
+func (browser *FirefoxBrowser) GatherInfo() BrowserInfo {
 	var windowData []WindowInfo
-	active := browser.isActive()
+	active := browser.GetState()
 
 	if active == BROWSER_OPEN {
-		windowData = browser.getWindowData()
+		windowData = browser.GetherWindowData()
 	}
 	return BrowserInfo{
 		browser.typicalName,
@@ -54,7 +54,7 @@ func (browser *FirefoxBrowser) GetInfo() BrowserInfo {
 	}
 }
 
-func (browser *FirefoxBrowser) getWindowData() []WindowInfo {
+func (browser *FirefoxBrowser) GetherWindowData() []WindowInfo {
 	var windowData []WindowInfo
 
 	for _, path := range browser.getSessionStorageLocation() {

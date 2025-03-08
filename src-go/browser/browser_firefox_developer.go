@@ -20,10 +20,10 @@ func GetFirefoxDeveloperBrowser() Browser {
 	}
 }
 
-func (browser *FirefoxDeveloperBrowser) GetInfo() BrowserInfo {
+func (browser *FirefoxDeveloperBrowser) GatherInfo() BrowserInfo {
 	return BrowserInfo{
 		browser.typicalName,
 		BROWSER_STATE_UNKNOWN,
-		browser.getWindowData(),
+		browser.GetherWindowData(),
 	}
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log/slog"
+	"runtime"
 	"time"
 
 	"github.com/Electrenator/Tabbly/src-go/browser"
@@ -24,7 +25,19 @@ func main() {
 
 	slog.Info(fmt.Sprintf("Application settings: %+v\n", settings))
 	for {
-		slog.Info(fmt.Sprintf("Thingy: %+v\n", browser.GetUsageInfo()))
+		availableBrowsers := browser.GetAvailableBrowsers()
+
+		if settings.verbose {
+			browser.LogAllBrowserStates()
+		}
+
+		for _, browserInst := range availableBrowsers {
+			if state := browserInst.GetState(); state == browser.BROWSER_OPEN || state == browser.BROWSER_STATE_UNKNOWN {
+				slog.Info(browserInst.GetName())
+			}
+		}
+
+		runtime.GC() // Can run GC if where going to sleep anyways
 		time.Sleep(time.Second * time.Duration(settings.updateInterval))
 	}
 }
