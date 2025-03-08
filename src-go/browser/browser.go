@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"path/filepath"
-	"reflect"
 
 	"github.com/Electrenator/Tabbly/src-go/util"
 	"github.com/shirou/gopsutil/v4/process"
@@ -54,14 +53,6 @@ func (browser *AbstractBrowser) isActive() BrowserState {
 	}
 
 	return BROWSER_CLOSED
-}
-
-func (browser *AbstractBrowser) getWindowData() []WindowInfo {
-	panic(fmt.Sprintf(
-		"Browser '%s' (%s) is unimplemented!",
-		reflect.TypeOf(browser).String(),
-		browser.typicalName,
-	))
 }
 
 func (browser *AbstractBrowser) getSessionStorageLocation() []string {

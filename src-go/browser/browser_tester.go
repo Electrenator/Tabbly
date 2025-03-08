@@ -18,7 +18,7 @@ func GetTesterBrowser() Browser {
 func (browser *TesterBrowser) GetInfo() BrowserInfo {
 	return BrowserInfo{
 		browser.typicalName,
-		browser.isActive(),
+		BROWSER_STATE_UNKNOWN,
 		browser.getWindowData(),
 	}
 }

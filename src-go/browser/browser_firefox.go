@@ -41,9 +41,10 @@ func GetFirefoxBrowser() Browser {
 }
 
 func (browser *FirefoxBrowser) GetInfo() BrowserInfo {
-	var active BrowserState
 	var windowData []WindowInfo
-	if active = browser.isActive(); active == BROWSER_OPEN {
+	active := browser.isActive()
+
+	if active == BROWSER_OPEN {
 		windowData = browser.getWindowData()
 	}
 	return BrowserInfo{
