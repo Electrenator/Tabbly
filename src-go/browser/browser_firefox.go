@@ -104,6 +104,9 @@ func parseSessionBackup(path string) (map[string]any, error) {
 	))
 
 	jsonValues := make(map[string]any)
+	// Following operation somehow massively increases application memory usage
+	// What's happening in that Unmarshal that makes the application go from ±11
+	// to 75MiB (depending on session file) at sleep back in main?
 	if err := json.Unmarshal(data, &jsonValues); err != nil {
 		slog.Error(
 			"Can't json decode file",

@@ -27,6 +27,7 @@ var availableBrowsers = []Browser{
 	GetTesterBrowser(),
 	GetFirefoxBrowser(),
 	GetFirefoxDeveloperBrowser(),
+	GetChromiumBrowser(),
 }
 
 func GetAvailableBrowsers() []Browser {
