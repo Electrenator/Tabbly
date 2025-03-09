@@ -12,7 +12,6 @@ import (
 type Browser interface {
 	GetName() string
 	GetState() BrowserState
-	GatherInfo() BrowserInfo
 	GetherWindowData() []WindowInfo
 }
 

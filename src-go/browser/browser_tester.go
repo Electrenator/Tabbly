@@ -15,14 +15,6 @@ func GetTesterBrowser() Browser {
 	}
 }
 
-func (browser *TesterBrowser) GatherInfo() BrowserInfo {
-	return BrowserInfo{
-		browser.typicalName,
-		BROWSER_STATE_UNKNOWN,
-		browser.GetherWindowData(),
-	}
-}
-
 func (browser *TesterBrowser) GetherWindowData() []WindowInfo {
 	return []WindowInfo{}
 }

@@ -40,20 +40,6 @@ func GetFirefoxBrowser() Browser {
 	}
 }
 
-func (browser *FirefoxBrowser) GatherInfo() BrowserInfo {
-	var windowData []WindowInfo
-	active := browser.GetState()
-
-	if active == BROWSER_OPEN {
-		windowData = browser.GetherWindowData()
-	}
-	return BrowserInfo{
-		browser.typicalName,
-		active,
-		windowData,
-	}
-}
-
 func (browser *FirefoxBrowser) GetherWindowData() []WindowInfo {
 	var windowData []WindowInfo
 

@@ -36,8 +36,12 @@ func GetAvailableBrowsers() []Browser {
 func LogAllBrowserStates() {
 	combinedInfo := make([]BrowserInfo, len(availableBrowsers))
 
-	for i := range availableBrowsers {
-		combinedInfo[i] = availableBrowsers[i].GatherInfo()
+	for i, browser := range availableBrowsers {
+		combinedInfo[i] = BrowserInfo{
+			browser.GetName(),
+			browser.GetState(),
+			browser.GetherWindowData(),
+		}
 	}
 	slog.Info(fmt.Sprintf("Browsers: %+v\n", combinedInfo))
 }
