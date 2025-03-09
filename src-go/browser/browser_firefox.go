@@ -44,34 +44,11 @@ func (browser *FirefoxBrowser) GetherWindowData() []WindowInfo {
 	var windowData []WindowInfo
 
 	for _, path := range browser.getSessionStorageLocation() {
-		fileData, err := os.ReadFile(path)
+		jsonValues, err := parseSessionBackup(path)
 		if err != nil {
-			slog.Error(
-				"Can't read file",
-				"path", path,
-				"error", err,
-			)
+			// Already logged in above function!
 			continue
 		}
-
-		data, err := jsonlz4.Uncompress(fileData)
-		if err != nil {
-			slog.Error(
-				"Can't decompress file for reading",
-				"path", path,
-				"error", err,
-			)
-			continue
-		}
-		slog.Info(fmt.Sprintf(
-			"Decompressed %s of size %s (%s uncompressed)",
-			path,
-			humanize.IBytes(uint64(len(fileData))),
-			humanize.IBytes(uint64(len(data))),
-		))
-
-		jsonValues := make(map[string]interface{})
-		json.Unmarshal(data, &jsonValues)
 
 		query, err := gojq.Parse(".windows | map(.tabs | length)")
 		if err != nil {
@@ -97,4 +74,43 @@ func (browser *FirefoxBrowser) GetherWindowData() []WindowInfo {
 	}
 
 	return windowData
+}
+
+func parseSessionBackup(path string) (map[string]any, error) {
+	fileData, err := os.ReadFile(path)
+	if err != nil {
+		slog.Error(
+			"Can't read file",
+			"path", path,
+			"error", err,
+		)
+		return nil, err
+	}
+
+	data, err := jsonlz4.Uncompress(fileData)
+	if err != nil {
+		slog.Error(
+			"Can't decompress file for reading",
+			"path", path,
+			"error", err,
+		)
+		return nil, err
+	}
+	slog.Info(fmt.Sprintf(
+		"Decompressed %s of size %s (%s uncompressed)",
+		path,
+		humanize.IBytes(uint64(len(fileData))),
+		humanize.IBytes(uint64(len(data))),
+	))
+
+	jsonValues := make(map[string]any)
+	if err := json.Unmarshal(data, &jsonValues); err != nil {
+		slog.Error(
+			"Can't json decode file",
+			"file", path,
+			"error", err,
+		)
+		return nil, err
+	}
+	return jsonValues, nil
 }
