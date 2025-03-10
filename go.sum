@@ -4,8 +4,8 @@ github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkp
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/ebitengine/purego v0.8.2 h1:jPPGWs2sZ1UgOSgD2bClL0MJIqu58nOmIcBuXr62z1I=
 github.com/ebitengine/purego v0.8.2/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
-github.com/electrenator/go-jsonlz4 v0.0.0-20250308135914-f66713c6d6bf h1:aLoAw7WEezL9hSeUQGOrUErR6BSIO3oOb6iZqBvy7vU=
-github.com/electrenator/go-jsonlz4 v0.0.0-20250308135914-f66713c6d6bf/go.mod h1:o5AsymoKBdWuMknX2JFUaw8BvzbttQE8lcVJIhq5fqM=
+github.com/giulianopz/go-dejsonlz4 v0.0.0-20250310212005-3e2e5dfb85f4 h1:CaRP6XnyzXDdnXksKosMAybQYiz6gGtDAyy1ND6cPcs=
+github.com/giulianopz/go-dejsonlz4 v0.0.0-20250310212005-3e2e5dfb85f4/go.mod h1:o5AsymoKBdWuMknX2JFUaw8BvzbttQE8lcVJIhq5fqM=
 github.com/go-ole/go-ole v1.2.6 h1:/Fpf6oFPoeFik9ty7siob0G6Ke8QvQEuVcuChpwXzpY=
 github.com/go-ole/go-ole v1.2.6/go.mod h1:pprOEPIfldk/42T2oK7lQ4v4JSDwmV0As9GaiUsvbm0=
 github.com/google/go-cmp v0.5.6/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=

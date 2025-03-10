@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/dustin/go-humanize v1.0.1
-	github.com/giulianopz/go-dejsonlz4 v0.0.0-00010101000000-000000000000
+	github.com/giulianopz/go-dejsonlz4 v0.0.0-20250310212005-3e2e5dfb85f4
 	github.com/itchyny/gojq v0.12.17
 	github.com/shirou/gopsutil/v4 v4.25.2
 	github.com/spf13/pflag v1.0.6
@@ -22,5 +22,3 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 )
-
-replace github.com/giulianopz/go-dejsonlz4 => github.com/electrenator/go-jsonlz4 v0.0.0-20250308135914-f66713c6d6bf
