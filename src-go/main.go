@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Electrenator/Tabbly/src-go/browser"
+	"github.com/Electrenator/Tabbly/src-go/storage"
 	"github.com/spf13/pflag"
 )
 
@@ -31,11 +32,20 @@ func main() {
 			browser.LogAllBrowserStates()
 		}
 
+		stats := make([]browser.BrowserInfo, len(availableBrowsers))
+
 		for _, browserInst := range availableBrowsers {
 			if state := browserInst.GetState(); state == browser.BROWSER_OPEN || state == browser.BROWSER_STATE_UNKNOWN {
 				slog.Info(browserInst.GetName())
+				stats = append(stats, browser.BrowserInfo{
+					Name:    browserInst.GetName(),
+					IsOpen:  state,
+					Windows: browserInst.GetherWindowData(),
+				})
 			}
 		}
+
+		storage.SaveCsv(stats)
 
 		runtime.GC() // Can run GC if where going to sleep anyways
 		time.Sleep(time.Second * time.Duration(settings.updateInterval))

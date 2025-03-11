@@ -1,8 +1,6 @@
 package util
 
 import (
-	"log/slog"
-	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
@@ -21,15 +19,6 @@ func ExpandHomeDirectory(path string) (string, error) {
 		path = filepath.Join(usr.HomeDir, path[2:])
 	}
 	return path, err
-}
-
-func FileSize(filePath string) int64 {
-	stats, err := os.Stat(filePath)
-	if err != nil {
-		slog.Error("Can't read file size!", "error", err)
-		return -1
-	}
-	return stats.Size()
 }
 
 // Converts a list of any into a list of the given type
