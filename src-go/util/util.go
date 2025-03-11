@@ -31,3 +31,15 @@ func ConvertSlice[E any](in []any) (out []E) {
 	}
 	return
 }
+
+func SumSlice[T ~int](slice []T) T {
+	if slice == nil {
+		return -1
+	}
+	var sum T
+	for i := 0; i < len(slice); i++ {
+		sum += slice[i]
+	}
+
+	return sum
+}

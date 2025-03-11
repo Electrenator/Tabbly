@@ -11,7 +11,11 @@ import (
 	"time"
 
 	"github.com/Electrenator/Tabbly/src-go/browser"
+	internal_status "github.com/Electrenator/Tabbly/src-go/internal/status"
+	"github.com/Electrenator/Tabbly/src-go/util"
 )
+
+const defaultFilePath = "log/go_version"
 
 var previousTabCount int = -1
 
@@ -24,47 +28,43 @@ var previousTabCount int = -1
 //	only written this, so it has parity to the current python version
 //
 // This function also has wayyy to many choice decisions in it and should only be responsible for saving!
-func SaveCsv(browserList []browser.BrowserInfo) {
+func SaveToCsv(browserList []browser.BrowserInfo) {
 	const separator = ';'
-	var windowTabs []int
-	tabSum := 0
+	summary := browser.CreateSummary(browserList)
 
-	for _, browser := range browserList {
-		for _, window := range browser.Windows {
-			windowTabs = append(windowTabs, window.TabCount)
-			tabSum += window.TabCount
-		}
-	}
-
-	if tabSum == previousTabCount {
+	if len(summary) == previousTabCount {
 		return
 	}
 	slog.Info("Tab change detected → Continuing to log")
-	previousTabCount = tabSum
+	previousTabCount = len(summary)
 
 	csvPath, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
-	csvPath = filepath.Join(csvPath, "log/go_version", getCsvName())
+
+	csvPath = filepath.Join(csvPath, defaultFilePath, getCsvName())
+	var file *os.File
 
 	if _, err := os.Stat(csvPath); err != nil {
 		slog.Info(fmt.Sprintf("Creating new file: %s", csvPath))
-		initCsvFile(csvPath, separator)
+		file = initCsvFile(csvPath, separator)
 	}
 
-	file, err := os.OpenFile(csvPath, os.O_WRONLY|os.O_APPEND, 0)
-	if err != nil {
-		slog.Error("Can't open csv for writing", "error", err)
-		os.Exit(1)
+	if file == nil {
+		file, err = os.OpenFile(csvPath, os.O_WRONLY|os.O_APPEND, 0)
+		if err != nil {
+			slog.Error("Can't open csv for writing", "error", err)
+			os.Exit(internal_status.FILE_OPEN_ERROR)
+		}
 	}
 
 	file.WriteString(fmt.Sprintf(
 		"%d%c%d%c%d%c%+v\n",
 		time.Now().Unix(), separator,
-		len(windowTabs), separator,
-		tabSum, separator,
-		windowTabs,
+		len(summary), separator,
+		util.SumSlice(summary), separator,
+		summary,
 	))
 	file.Close()
 }
@@ -96,21 +96,22 @@ func isHostnameSperator(r rune) bool {
 	return r == '-' || r == '_'
 }
 
-func initCsvFile(path string, sperator rune) {
+func initCsvFile(path string, sperator rune) *os.File {
 	err := os.MkdirAll(filepath.Dir(path), fs.ModePerm)
 	if err != nil {
 		slog.Error("Can't create log folder", "error", err)
-		os.Exit(1)
+		os.Exit(internal_status.FILE_CREATION_ERROR)
 	}
 
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, fs.ModePerm)
 	if err != nil {
 		slog.Error("Can't create log file", "error", err)
-		os.Exit(1)
+		os.Exit(internal_status.FILE_CREATION_ERROR)
 	}
+	defer file.Close()
 
 	file.WriteString(fmt.Sprintf(
 		"'UNIX timestamp'%c'Total window count'%c'Total tab count'%c'List of total tabs per window'\n",
 		sperator, sperator, sperator))
-	file.Close()
+	return file
 }

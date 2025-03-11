@@ -28,3 +28,15 @@ var availableBrowsers = []Browser{
 func GetAvailableBrowsers() []Browser {
 	return availableBrowsers
 }
+
+func CreateSummary(info []BrowserInfo) []int {
+	var windowTabs []int
+
+	for _, browser := range info {
+		for _, window := range browser.Windows {
+			windowTabs = append(windowTabs, window.TabCount)
+		}
+	}
+
+	return windowTabs
+}
