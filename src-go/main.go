@@ -27,16 +27,11 @@ func main() {
 	slog.Info(fmt.Sprintf("Application settings: %+v\n", settings))
 	for {
 		availableBrowsers := browser.GetAvailableBrowsers()
-
-		if settings.verbose {
-			browser.LogAllBrowserStates()
-		}
-
-		stats := make([]browser.BrowserInfo, len(availableBrowsers))
+		stats := []browser.BrowserInfo{}
 
 		for _, browserInst := range availableBrowsers {
-			if state := browserInst.GetState(); state == browser.BROWSER_OPEN || state == browser.BROWSER_STATE_UNKNOWN {
-				slog.Info(browserInst.GetName())
+			if state := browserInst.GetState(); state == browser.BROWSER_OPEN ||
+				state == browser.BROWSER_STATE_UNKNOWN {
 				stats = append(stats, browser.BrowserInfo{
 					Name:    browserInst.GetName(),
 					IsOpen:  state,
@@ -45,6 +40,9 @@ func main() {
 			}
 		}
 
+		if settings.verbose {
+			slog.Info(fmt.Sprintf("Browsers: %+v\n", stats))
+		}
 		storage.SaveCsv(stats)
 
 		runtime.GC() // Can run GC if where going to sleep anyways
