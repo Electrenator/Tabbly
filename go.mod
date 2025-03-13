@@ -6,6 +6,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/giulianopz/go-dejsonlz4 v0.0.0-20250310212005-3e2e5dfb85f4
 	github.com/itchyny/gojq v0.12.17
+	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/shirou/gopsutil/v4 v4.25.2
 	github.com/spf13/pflag v1.0.6
 )

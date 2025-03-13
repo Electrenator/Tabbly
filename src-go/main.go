@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"log/slog"
 	"runtime"
@@ -17,7 +18,11 @@ type Settings struct {
 	updateInterval uint16
 }
 
+//go:embed database/*
+var databasefiles embed.FS
+
 func main() {
+	storage.Databasefiles = databasefiles
 	settings := initSettings()
 
 	if !settings.verbose {
@@ -43,7 +48,8 @@ func main() {
 		if settings.verbose {
 			slog.Info(fmt.Sprintf("Browsers: %+v\n", stats))
 		}
-		storage.SaveCsv(stats)
+		storage.SaveToCsv(stats)
+		storage.SaveToDb(stats)
 
 		runtime.GC() // Can run GC if where going to sleep anyways
 		time.Sleep(time.Second * time.Duration(settings.updateInterval))
