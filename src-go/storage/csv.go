@@ -2,7 +2,6 @@ package storage
 
 import (
 	"fmt"
-	"io/fs"
 	"log"
 	"log/slog"
 	"os"
@@ -97,13 +96,13 @@ func isHostnameSperator(r rune) bool {
 }
 
 func initCsvFile(path string, sperator rune) *os.File {
-	err := os.MkdirAll(filepath.Dir(path), fs.ModePerm)
+	err := os.MkdirAll(filepath.Dir(path), util.DefaultDirPerms)
 	if err != nil {
 		slog.Error("Can't create log folder", "error", err)
 		os.Exit(internal_status.FILE_CREATION_ERROR)
 	}
 
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, fs.ModePerm)
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, util.DefaultFilePerms)
 	if err != nil {
 		slog.Error("Can't create log file", "error", err)
 		os.Exit(internal_status.FILE_CREATION_ERROR)

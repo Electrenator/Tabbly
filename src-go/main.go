@@ -4,28 +4,24 @@ import (
 	"embed"
 	"fmt"
 	"log/slog"
+	"os"
 	"runtime"
 	"time"
 
 	"github.com/Electrenator/Tabbly/src-go/browser"
 	"github.com/Electrenator/Tabbly/src-go/storage"
-	"github.com/spf13/pflag"
+	"github.com/Electrenator/Tabbly/src-go/util"
 )
-
-type Settings struct {
-	verbose        bool
-	dryRun         bool
-	updateInterval uint16
-}
 
 //go:embed database/*
 var databasefiles embed.FS
 
 func main() {
+	settings := util.InitSettings()
 	storage.Databasefiles = databasefiles
-	settings := initSettings()
+	storage.ApplicationSettings = &settings
 
-	if !settings.verbose {
+	if !settings.Verbose {
 		slog.SetLogLoggerLevel(slog.LevelWarn)
 	}
 
@@ -45,27 +41,16 @@ func main() {
 			}
 		}
 
-		if settings.verbose {
+		if settings.Verbose {
 			slog.Info(fmt.Sprintf("Browsers: %+v\n", stats))
 		}
 		storage.SaveToCsv(stats)
 		storage.SaveToDb(stats)
 
+		os.Exit(0)
+
 		runtime.GC() // Can run GC if where going to sleep anyways
-		time.Sleep(time.Second * time.Duration(settings.updateInterval))
+		time.Sleep(time.Second * time.Duration(settings.UpdateInterval))
 	}
-}
 
-func initSettings() Settings {
-	verboseFlag := pflag.BoolP("verbose", "v", false, "Verbose logging output")
-	dryRunFlag := pflag.Bool("dryrun", false, "Verbose logging output")
-	intervalFlag := pflag.Uint16("interval", 60, "Time between tab checks in seconds")
-
-	pflag.Parse()
-	settings := Settings{
-		verbose:        *verboseFlag,
-		dryRun:         *dryRunFlag,
-		updateInterval: *intervalFlag,
-	}
-	return settings
 }
