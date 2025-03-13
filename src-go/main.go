@@ -4,7 +4,6 @@ import (
 	"embed"
 	"fmt"
 	"log/slog"
-	"os"
 	"runtime"
 	"time"
 
@@ -46,8 +45,6 @@ func main() {
 		}
 		storage.SaveToCsv(stats)
 		storage.SaveToDb(stats)
-
-		os.Exit(0)
 
 		runtime.GC() // Can run GC if where going to sleep anyways
 		time.Sleep(time.Second * time.Duration(settings.UpdateInterval))

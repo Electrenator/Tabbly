@@ -30,7 +30,7 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	db, err := connectToDb()
 	if err != nil {
 		slog.Error("Unable to connect to database", "error", err)
-		os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
+		os.Exit(internal_status.DB_CONNECT_ERROR)
 	}
 	defer db.Close()
 
@@ -46,12 +46,12 @@ func getDbFileName() string {
 	if ApplicationSettings.IsDevelopmentBuild {
 		return filepath.Join(ApplicationSettings.DataPath, dbFileName+"-dev"+dbFileExt)
 	}
-	return dbFileExt + dbFileExt
+	return dbFileName + dbFileExt
 }
 
 // Makes a SQLite DB connection if possible. Initializes the database if it
-// does not exist yet and (ToDo) runs migrations when the DB version is not
-// up to date with the current application version
+// does not exist yet and runs migrations when the DB version is not up to
+// date with the current application version.
 func connectToDb() (*sql.DB, error) {
 	if err := os.MkdirAll(ApplicationSettings.DataPath, util.DefaultDirPerms); err != nil {
 		slog.Error("Unable to application data directory!", "error", err)
