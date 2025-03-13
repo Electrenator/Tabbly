@@ -24,7 +24,7 @@ var ApplicationSettings *util.Settings
 
 // Keeps track if the DB version has been checked since application start. Only
 // allow a DB version 1 time per start
-var checkedDbVersion = false
+var checkedDbSchemaVersion = false
 
 func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	db, err := connectToDb()
@@ -34,9 +34,11 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	}
 	defer db.Close()
 
-	var version string
-	db.QueryRow("SELECT SQLITE_VERSION()").Scan(&version)
-	fmt.Println("DB version:", version)
+	// Todo; actually insert data with steps
+	// 1. Check if browser exists, if not, add it. Keep track of ID's
+	// 2. Create `Entry` row with current timestamp. Also keep the ID
+	// 3. Insert the activities based on both the browser ID and `Entry` ID
+	// 		- Each window gets a row here
 }
 
 func getDbFileName() string {
@@ -70,25 +72,30 @@ func connectToDb() (*sql.DB, error) {
 		return nil, err
 	}
 
-	if !checkedDbVersion {
+	if !checkedDbSchemaVersion {
 		latestMigrationVersion := getAvailableMigrationVersion()
-		currentDbVersion := getCurrentDbSchemaVersion(db)
+		currentDbSchemaVersion := getCurrentDbSchemaVersion(db)
 
-		if currentDbVersion < latestMigrationVersion {
+		var version string
+		db.QueryRow("SELECT SQLITE_VERSION()").Scan(&version)
+		slog.Info(fmt.Sprintln("SQLite version:", version))
+
+		if currentDbSchemaVersion < latestMigrationVersion {
 			slog.Warn("Database out of date. Trying to migrate!",
-				"currentVersion", currentDbVersion,
+				"currentVersion", currentDbSchemaVersion,
 				"latestApplicationDb", latestMigrationVersion,
 			)
 
-			err := migrateDatabase(db, currentDbVersion)
+			err := migrateDatabase(db, currentDbSchemaVersion)
 			if err != nil {
 				db.Close()
 				slog.Error("Unable to migrate...", "error", err)
 				os.Exit(internal_status.DB_MIGRATION_ERROR)
 			}
 		} else {
-			slog.Info(fmt.Sprintf("Database on schema on version %d", currentDbVersion))
+			slog.Info(fmt.Sprintf("Database on schema on version %d", currentDbSchemaVersion))
 		}
+		checkedDbSchemaVersion = true
 	}
 	return db, nil
 }
@@ -185,7 +192,10 @@ func migrateDatabase(db *sql.DB, fromVersion int) error {
 		affectedRows, _ := result.RowsAffected()
 		affectedRowCount += affectedRows
 	}
-	slog.Info("Migration success!", "rowChanges", affectedRowCount)
+	slog.Info("Migration success!",
+		"rowChanges", affectedRowCount,
+		"currentSchemaVersion", getCurrentDbSchemaVersion(db),
+	)
 
 	return err
 }
