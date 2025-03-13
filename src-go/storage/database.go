@@ -3,7 +3,6 @@ package storage
 import (
 	"database/sql"
 	"embed"
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -81,9 +80,9 @@ func connectToDb() (*sql.DB, error) {
 		slog.Info(fmt.Sprintln("SQLite version:", version))
 
 		if currentDbSchemaVersion < latestMigrationVersion {
-			slog.Warn("Database out of date. Trying to migrate!",
-				"currentVersion", currentDbSchemaVersion,
-				"latestApplicationDb", latestMigrationVersion,
+			slog.Warn("Database out of date. Going to migrate!",
+				"schemaVersion", currentDbSchemaVersion,
+				"latestSchema", latestMigrationVersion,
 			)
 
 			err := migrateDatabase(db, currentDbSchemaVersion)
@@ -151,7 +150,7 @@ func migrateDatabase(db *sql.DB, fromVersion int) error {
 	if fromVersion >= 0 {
 		err := util.CopyFile(getDbFileName(), fmt.Sprintf("%s.v%d.bck", getDbFileName(), fromVersion))
 		if err != nil {
-			return errors.New(fmt.Sprintf("unable to create db backup: %s", err.Error()))
+			return fmt.Errorf("unable to create db backup: %s", err.Error())
 		}
 	}
 
