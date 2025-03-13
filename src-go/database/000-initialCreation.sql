@@ -24,6 +24,7 @@ CREATE TABLE "WindowInformation" (
 	FOREIGN KEY("browserId") REFERENCES "Browser"("id") ON UPDATE CASCADE ON DELETE RESTRICT,
 	FOREIGN KEY("entryId") REFERENCES "Entry"("id") ON UPDATE CASCADE ON DELETE RESTRICT
 );
+CREATE INDEX "WindowInformation.entryId" ON `WindowInformation`("entryId");
 
 INSERT INTO `Database` (`version`) VALUES (0);
 
