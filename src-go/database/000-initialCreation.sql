@@ -1,3 +1,5 @@
+BEGIN TRANSACTION;
+
 CREATE TABLE "Browser" (
 	"id"	INTEGER NOT NULL,
 	"name"	TEXT NOT NULL UNIQUE,
@@ -23,4 +25,6 @@ CREATE TABLE "WindowInformation" (
 	FOREIGN KEY("entryId") REFERENCES "Entry"("id") ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
-INSERT INTO `Database` (`version`) VALUES (0)
+INSERT INTO `Database` (`version`) VALUES (0);
+
+COMMIT;

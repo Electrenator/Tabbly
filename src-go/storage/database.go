@@ -5,7 +5,6 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -23,29 +22,21 @@ const dbStructureDirectory = "database"
 var Databasefiles embed.FS
 var ApplicationSettings *util.Settings
 
-// Keeps track that the parent dirs have been verified to exist. Only run 1 time
-// per application start
-var checkedStorageParents = false
-
 // Keeps track if the DB version has been checked since application start. Only
 // allow a DB version 1 time per start
 var checkedDbVersion = false
 
 func SaveToDb(browserInfoList []browser.BrowserInfo) {
-
-	walkFilesFunc(Databasefiles, false)
-
 	db, err := connectToDb()
 	if err != nil {
 		slog.Error("Unable to connect to database", "error", err)
 		os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 	}
+	defer db.Close()
 
 	var version string
 	db.QueryRow("SELECT SQLITE_VERSION()").Scan(&version)
 	fmt.Println("DB version:", version)
-
-	db.Close()
 }
 
 func getDbFileName() string {
@@ -62,22 +53,16 @@ func getDbFileName() string {
 // does not exist yet and (ToDo) runs migrations when the DB version is not
 // up to date with the current application version
 func connectToDb() (*sql.DB, error) {
-	if !checkedStorageParents {
-		// This path checks if the config directory & Tabbly DB exists, if not it creates it
-		err := os.MkdirAll(ApplicationSettings.DataPath, util.DefaultDirPerms)
+	if err := os.MkdirAll(ApplicationSettings.DataPath, util.DefaultDirPerms); err != nil {
+		slog.Error("Unable to application data directory!", "error", err)
+		os.Exit(internal_status.FILE_CREATION_ERROR)
+	}
 
-		if err == nil {
-			var file *os.File
-			file, err = os.OpenFile(getDbFileName(), os.O_CREATE, util.DefaultFilePerms)
-
-			if err != nil {
-				file.Close()
-			}
-		}
-		if err != nil {
-			slog.Error("Unable to create DB file!", "error", err)
-			os.Exit(internal_status.FILE_CREATION_ERROR)
-		}
+	if file, err := os.OpenFile(getDbFileName(), os.O_CREATE, util.DefaultFilePerms); err != nil {
+		slog.Error("Unable to create DB file!", "error", err)
+		os.Exit(internal_status.FILE_CREATION_ERROR)
+	} else {
+		file.Close()
 	}
 
 	db, err := sql.Open("sqlite3", "file:"+getDbFileName())
@@ -86,8 +71,8 @@ func connectToDb() (*sql.DB, error) {
 	}
 
 	if !checkedDbVersion {
-		latestMigrationVersion := getLatestDbVersion()
-		currentDbVersion := getCurrentDbVersion(db)
+		latestMigrationVersion := getAvailableMigrationVersion()
+		currentDbVersion := getCurrentDbSchemaVersion(db)
 
 		if currentDbVersion < latestMigrationVersion {
 			slog.Warn("Database out of date. Trying to migrate!",
@@ -95,27 +80,17 @@ func connectToDb() (*sql.DB, error) {
 				"latestApplicationDb", latestMigrationVersion,
 			)
 
-			err := errors.New("migration unimplemented")
+			err := migrateDatabase(db, currentDbVersion)
 			if err != nil {
+				db.Close()
 				slog.Error("Unable to migrate...", "error", err)
 				os.Exit(internal_status.DB_MIGRATION_ERROR)
 			}
+		} else {
+			slog.Info(fmt.Sprintf("Database on schema on version %d", currentDbVersion))
 		}
-
-		fmt.Printf("Latest version; %d\n", getLatestDbVersion())
-		fmt.Printf("Current DB version; %d\n", getCurrentDbVersion(db))
 	}
 	return db, nil
-}
-
-func walkFilesFunc(file fs.FS, function bool) {
-	fs.WalkDir(file, ".", func(path string, d fs.DirEntry, err error) error {
-		if d.IsDir() {
-			return err
-		}
-		fmt.Println(path, err)
-		return err
-	})
 }
 
 // Get the latest migration version from `database/`. These files are
@@ -125,7 +100,7 @@ func walkFilesFunc(file fs.FS, function bool) {
 //
 // If no version files are found -1 is returned. Should never happen when
 // it's correctly build.
-func getLatestDbVersion() int {
+func getAvailableMigrationVersion() int {
 	files, err := Databasefiles.ReadDir(dbStructureDirectory)
 	if err != nil {
 		slog.Error("Unable to read db migration directory",
@@ -156,11 +131,61 @@ func getVersionFromFile(filename string) int {
 	return version
 }
 
-func getCurrentDbVersion(db *sql.DB) int {
+func getCurrentDbSchemaVersion(db *sql.DB) int {
 	var version int
 	err := db.QueryRow("SELECT `version` FROM `Database`").Scan(&version)
 	if err != nil {
 		return -1
 	}
 	return version
+}
+
+func migrateDatabase(db *sql.DB, fromVersion int) error {
+	if fromVersion >= 0 {
+		err := util.CopyFile(getDbFileName(), fmt.Sprintf("%s.v%d.bck", getDbFileName(), fromVersion))
+		if err != nil {
+			return errors.New(fmt.Sprintf("unable to create db backup: %s", err.Error()))
+		}
+	}
+
+	migrationFiles, err := Databasefiles.ReadDir(dbStructureDirectory)
+	if err != nil {
+		return err
+	}
+
+	var affectedRowCount int64 = 0
+
+	for _, file := range migrationFiles {
+		fileVersion := getVersionFromFile(file.Name())
+
+		if fromVersion >= fileVersion {
+			continue
+		}
+
+		if file.IsDir() || !strings.HasSuffix(file.Name(), ".sql") || fileVersion < 0 {
+			slog.Warn("Non-SQL or migration file found in migration folder, skipping.",
+				"filePath", file.Name(),
+				"isDirectory", file.IsDir(),
+			)
+			continue
+		}
+
+		slog.Info(fmt.Sprintf("Running migration to version %d", fileVersion))
+
+		fileData, err := Databasefiles.ReadFile(filepath.Join(dbStructureDirectory, file.Name()))
+		if err != nil {
+			return err
+		}
+
+		result, err := db.Exec(string(fileData))
+		if err != nil {
+			db.Exec("ROLLBACK")
+			return err
+		}
+		affectedRows, _ := result.RowsAffected()
+		affectedRowCount += affectedRows
+	}
+	slog.Info("Migration success!", "rowChanges", affectedRowCount)
+
+	return err
 }
