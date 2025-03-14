@@ -1,4 +1,4 @@
 glob2~=0.7
 lz4~=4.3
-psutil~=5.9
+psutil~=7.0
 pypresence~=4.2.0
