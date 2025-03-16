@@ -46,7 +46,7 @@ func SaveCsv(browserList []browser.BrowserInfo) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	csvPath = filepath.Join(csvPath, "log/go_version", getCsvName())
+	csvPath = filepath.Join(csvPath, "log/", getCsvName())
 
 	if _, err := os.Stat(csvPath); err != nil {
 		slog.Info(fmt.Sprintf("Creating new file: %s", csvPath))
