@@ -43,7 +43,9 @@ func main() {
 		if settings.verbose {
 			slog.Info(fmt.Sprintf("Browsers: %+v\n", stats))
 		}
-		storage.SaveCsv(stats)
+		if !settings.dryRun {
+			storage.SaveCsv(stats)
+		}
 
 		runtime.GC() // Can run GC if where going to sleep anyways
 		time.Sleep(time.Second * time.Duration(settings.updateInterval))
