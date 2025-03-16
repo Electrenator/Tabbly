@@ -1,35 +1,37 @@
 # Tabbly
-A program for showing your tab usage within Discord's rich presence and to log that usage. Currently only supports usage on Firefox within GNU/Linux. If you want to help bring this little script to your OS of choice, don't be afraid to create a pull request :)
+<!-- [![Go Reference](https://pkg.go.dev/badge/github.com/Electrenator/Tabbly.svg)](https://pkg.go.dev/github.com/Electrenator/Tabbly) -->
+<!-- [![Go Report Card](https://goreportcard.com/badge/github.com/Electrenator/Tabbly)](https://goreportcard.com/report/github.com/Electrenator/Tabbly) -->
+<!-- Above not yet available due to not being published -->
 
-![Tabbly in use within Discord. The application is displaying the usage of 83 active browser tabs.](https://user-images.githubusercontent.com/18311389/151074155-78ccf239-5127-4e7a-8380-f7038ade6338.png)
+Ever surprised by how large your tab counter gets within your browser? Due to them still being "needed" sometime or when you accumulate some information for an active project? Well this application is to help one keep track of that usage and gather data on which browser window has how many tabs open. Hope to one day create of this.
+
+Currently this application supports Firefox and it's development version. There are plans to support other browsers too (#26) but there currently isn't a timeline on that. Limitations being that the browsers should save session restore files for this application to read.
+
 
 ## How to run
-You will firstly need to have the following things installed and have access to a terminal within the project's folder.
+To run this application one needs to *either* build the *Go version* or run the *Python version*. The Go version currently has to be manually build using `go build ./src-go/main.go`, which can be run. With the Python version requiring some more work.
+
+### Python version
+The python version need the following things installed;
 - Python 3.8+
 - Python 3.8+ PIP
 
-### TL;DR
-Use the following command within bash **And** make sure `Display current activity as a status message.` is enabled within the privacy settings!
-```bash
-python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python src/main.py; deactivate
-```
+With those installed it's recommended to create an virtual environment and installing the requirements of this application within.
 
-### Full explanation
-After installing that, you will need a virtual environment for python to run in. This can be created and entered with the following command on GNU/Linux. It may be necessary to type `python3` instead of `python` if you also have Python version 2 installed.
 ```bash
 python -m venv venv
-source venv/bin/activate
-```
-Note: this virtual environment can be deactivated with the `deactivate` command and cleaned up after by just removing the `venv` folder.
-
-Finally you will need to install the dependencies of this program. This can be done with the following command but `pip` may need to be replaced with `pip3` depending on what's installed on your PC.
-```bash
+source venv/bin/activate # ← might be different depending on your OS
 pip install -r requirements.txt
+
+# Use "deactivate" to exit this virtual environment
 ```
-Now you can run `python src/main.py` to start running the program. The only thing you need to make sure of now is that the `Display current activity as a status message.` setting is enabled within Discord. Tabbly won't show anything if it isn't.
 
+With that installed the application can be run using `python src/main.py`. The only thing you need to make sure of now is that the `Display current activity as a status message.` setting is enabled within Discord if you want to show tab usages within there. *Do note that the Discord integration feature won't be transferred over to the Go version, which will eventually replace this Python version*.
 
-Note: When you want to contribute, you should probably also add the dev dependencies so pylint and black can be used during development. This can be done in the venv described above using the following command.
+![Tabbly in use within Discord. The application is displaying the usage of 83 active browser tabs.](https://user-images.githubusercontent.com/18311389/151074155-78ccf239-5127-4e7a-8380-f7038ade6338.png)
+
+Lastly the Python version also has development dependances. THese are only required while developing and give tools like linters and formatters.
+
 ```bash
 pip install -r requirements.dev.txt
 ```
