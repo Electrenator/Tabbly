@@ -195,7 +195,7 @@ func getCurrentDbSchemaVersion(db *sql.DB) int {
 
 func migrateDatabase(db *sql.DB, fromVersion int) error {
 	if fromVersion >= 0 {
-		err := util.CopyFile(getDbFileName(), fmt.Sprintf("%s.v%d.bck", getDbFileName(), fromVersion))
+		err := copyFile(getDbFileName(), fmt.Sprintf("%s.v%d.bck", getDbFileName(), fromVersion))
 		if err != nil {
 			return fmt.Errorf("unable to create db backup: %s", err.Error())
 		}
