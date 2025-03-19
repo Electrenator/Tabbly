@@ -1,30 +1,28 @@
 BEGIN TRANSACTION;
 
+CREATE TABLE "Database" (
+	"version"	INTEGER NOT NULL DEFAULT 0
+);
+
 CREATE TABLE "Browser" (
 	"id"	INTEGER NOT NULL,
 	"name"	TEXT NOT NULL UNIQUE,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
-CREATE TABLE "Database" (
-	"version"	INTEGER NOT NULL DEFAULT 0
-);
-
 CREATE TABLE "Entry" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"timestamp"	INTEGER NOT NULL UNIQUE,
-	PRIMARY KEY("id" AUTOINCREMENT)
+	"id" INTEGER NOT NULL,
+	"timestamp"	INTEGER NOT NULL,
+	"browserId"	INTEGER NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("browserId") REFERENCES "Browser"("id") ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
-CREATE TABLE "WindowInformation" (
+CREATE TABLE "window" (
 	"entryId"	INTEGER NOT NULL,
-	"browserId"	INTEGER NOT NULL,
-	"tabs"	INTEGER NOT NULL,
-	PRIMARY KEY("entryId","browserId"),
-	FOREIGN KEY("browserId") REFERENCES "Browser"("id") ON UPDATE CASCADE ON DELETE RESTRICT,
+	"openTabs"	INTEGER NOT NULL,
 	FOREIGN KEY("entryId") REFERENCES "Entry"("id") ON UPDATE CASCADE ON DELETE RESTRICT
 );
-CREATE INDEX "WindowInformation.entryId" ON `WindowInformation`("entryId");
 
 INSERT INTO `Database` (`version`) VALUES (0);
 

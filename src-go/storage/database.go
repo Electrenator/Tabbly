@@ -26,6 +26,7 @@ var ApplicationSettings *util.Settings
 // allow a DB version 1 time per start
 var checkedDbSchemaVersion = false
 
+// Todo; Make smarter. Only insert changed browsers. Also add an empty browser entry when the browser closed
 func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	db, err := connectToDb()
 	if err != nil {
@@ -37,17 +38,6 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	db.Exec("BEGIN TRANSACTION")
 
 	time := time.Now().Unix()
-	result, err := db.Exec("INSERT INTO `Entry` (`timestamp`) VALUES (?)", time)
-	if err != nil {
-		dbErrorRollback(db, err)
-		return
-	}
-
-	entryId, err := result.LastInsertId()
-	if err != nil {
-		dbErrorRollback(db, err)
-		return
-	}
 
 	for _, browser := range browserInfoList {
 		var browserId int64
@@ -67,21 +57,25 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 			return
 		}
 
-		if len(browser.Windows) == 0 {
-			_, err = db.Exec(
-				"INSERT INTO `WindowInformation` (`entryId`, `browserId`, `tabs`) VALUES (?, ?, ?)",
-				entryId, browserId, 0,
-			)
-			if err != nil {
-				dbErrorRollback(db, err)
-				return
-			}
+		result, err := db.Exec(
+			"INSERT INTO `Entry` (`timestamp`, `browserId`) VALUES (?, ?)",
+			time, browserId,
+		)
+		if err != nil {
+			dbErrorRollback(db, err)
+			return
+		}
+
+		entryId, err := result.LastInsertId()
+		if err != nil {
+			dbErrorRollback(db, err)
+			return
 		}
 
 		for _, window := range browser.Windows {
 			_, err = db.Exec(
-				"INSERT INTO `WindowInformation` (`entryId`, `browserId`, `tabs`) VALUES (?, ?, ?)",
-				entryId, browserId, window.TabCount,
+				"INSERT INTO `Window` (`entryId`, `openTabs`) VALUES (?, ?)",
+				entryId, window.TabCount,
 			)
 			if err != nil {
 				dbErrorRollback(db, err)
@@ -91,12 +85,6 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	}
 
 	db.Exec("COMMIT")
-
-	// Todo; actually insert data with steps
-	// 1. Check if browser exists, if not, add it. Keep track of ID's
-	// 2. Create `Entry` row with current timestamp. Also keep the ID
-	// 3. Insert the activities based on both the browser ID and `Entry` ID
-	// 		- Each window gets a row here
 }
 
 func getDbFileName() string {
