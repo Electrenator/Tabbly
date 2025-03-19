@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Electrenator/Tabbly/src-go/browser"
 	internal_status "github.com/Electrenator/Tabbly/src-go/internal/status"
@@ -32,6 +33,64 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 		os.Exit(internal_status.DB_CONNECT_ERROR)
 	}
 	defer db.Close()
+
+	db.Exec("BEGIN TRANSACTION")
+
+	time := time.Now().Unix()
+	result, err := db.Exec("INSERT INTO `Entry` (`timestamp`) VALUES (?)", time)
+	if err != nil {
+		dbErrorRollback(db, err)
+		return
+	}
+
+	entryId, err := result.LastInsertId()
+	if err != nil {
+		dbErrorRollback(db, err)
+		return
+	}
+
+	for _, browser := range browserInfoList {
+		var browserId int64
+		err := db.QueryRow("SELECT `id` FROM `Browser` WHERE `name` == ?", browser.Name).Scan(&browserId)
+
+		if err == sql.ErrNoRows {
+			result, insertErr := db.Exec("INSERT INTO `Browser` (`name`) VALUES (?)", browser.Name)
+
+			if insertErr != nil {
+				err = insertErr
+			} else {
+				browserId, err = result.LastInsertId()
+			}
+		}
+		if err != nil {
+			dbErrorRollback(db, err)
+			return
+		}
+
+		if len(browser.Windows) == 0 {
+			_, err = db.Exec(
+				"INSERT INTO `WindowInformation` (`entryId`, `browserId`, `tabs`) VALUES (?, ?, ?)",
+				entryId, browserId, 0,
+			)
+			if err != nil {
+				dbErrorRollback(db, err)
+				return
+			}
+		}
+
+		for _, window := range browser.Windows {
+			_, err = db.Exec(
+				"INSERT INTO `WindowInformation` (`entryId`, `browserId`, `tabs`) VALUES (?, ?, ?)",
+				entryId, browserId, window.TabCount,
+			)
+			if err != nil {
+				dbErrorRollback(db, err)
+				return
+			}
+		}
+	}
+
+	db.Exec("COMMIT")
 
 	// Todo; actually insert data with steps
 	// 1. Check if browser exists, if not, add it. Keep track of ID's
@@ -185,7 +244,7 @@ func migrateDatabase(db *sql.DB, fromVersion int) error {
 
 		result, err := db.Exec(string(fileData))
 		if err != nil {
-			db.Exec("ROLLBACK")
+			dbErrorRollback(db, err)
 			return err
 		}
 		affectedRows, _ := result.RowsAffected()
@@ -197,4 +256,9 @@ func migrateDatabase(db *sql.DB, fromVersion int) error {
 	)
 
 	return err
+}
+
+func dbErrorRollback(db *sql.DB, err error) {
+	slog.Error("Error interacting with database, aborting interaction!", "error", err)
+	db.Exec("ROLLBACK")
 }
