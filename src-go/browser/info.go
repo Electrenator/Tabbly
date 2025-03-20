@@ -19,7 +19,6 @@ const (
 )
 
 var availableBrowsers = []Browser{
-	GetTesterBrowser(),
 	GetFirefoxBrowser(),
 	GetFirefoxDeveloperBrowser(),
 	GetChromiumBrowser(),

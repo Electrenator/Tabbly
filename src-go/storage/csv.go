@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/Electrenator/Tabbly/src-go/browser"
@@ -75,24 +74,6 @@ func getCsvName() string {
 	}
 
 	return "tabUsage" + asciiHostnameToPascalCase(hostname) + "V2.csv"
-}
-
-func asciiHostnameToPascalCase(input string) string {
-	const capitalDifference byte = 'a' - 'A'
-	parts := strings.FieldsFunc(strings.ToLower(input), isHostnameSperator)
-
-	for i, word := range parts {
-		wordParts := []byte(word)
-		wordParts[0] = wordParts[0] - capitalDifference
-		parts[i] = string(wordParts)
-	}
-
-	return strings.Join(parts, "")
-}
-
-// Returns true for ASCII hostname separators
-func isHostnameSperator(r rune) bool {
-	return r == '-' || r == '_'
 }
 
 func initCsvFile(path string, sperator rune) *os.File {

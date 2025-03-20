@@ -87,14 +87,23 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	db.Exec("COMMIT")
 }
 
+// returns the DB file name in the format:
+//
+//	[DataPath]/dbName-hostname[-dev].sqlite
 func getDbFileName() string {
-	const dbFileName = "test"
+	const dbName = "test"
 	const dbFileExt = ".sqlite"
+	hostname, err := os.Hostname()
+	if err != nil {
+		hostname = ""
+	}
+
+	tmpFileName := fmt.Sprintf("%s-%s", dbName, hostname)
 
 	if ApplicationSettings.IsDevelopmentBuild {
-		return filepath.Join(ApplicationSettings.DataPath, dbFileName+"-dev"+dbFileExt)
+		tmpFileName += "-dev"
 	}
-	return dbFileName + dbFileExt
+	return filepath.Join(ApplicationSettings.DataPath, tmpFileName+dbFileExt)
 }
 
 // Makes a SQLite DB connection if possible. Initializes the database if it

@@ -4,6 +4,7 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/Electrenator/Tabbly/src-go/util"
 	"github.com/dustin/go-humanize"
@@ -42,4 +43,22 @@ func closeFile(file *os.File) {
 	if err != nil {
 		slog.Error("Error closing file", "error", err)
 	}
+}
+
+func asciiHostnameToPascalCase(input string) string {
+	const capitalDifference byte = 'a' - 'A'
+	parts := strings.FieldsFunc(strings.ToLower(input), isHostnameSperator)
+
+	for i, word := range parts {
+		wordParts := []byte(word)
+		wordParts[0] = wordParts[0] - capitalDifference
+		parts[i] = string(wordParts)
+	}
+
+	return strings.Join(parts, "")
+}
+
+// Returns true for ASCII hostname separators
+func isHostnameSperator(r rune) bool {
+	return r == '-' || r == '_'
 }
