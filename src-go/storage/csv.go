@@ -56,14 +56,19 @@ func SaveToCsv(browserList []browser.BrowserInfo) {
 			os.Exit(internal_status.FILE_OPEN_ERROR)
 		}
 	}
+	defer file.Close()
 
-	file.WriteString(fmt.Sprintf(
+	_, err := file.WriteString(fmt.Sprintf(
 		"%d%c%d%c%d%c%+v\n",
 		time.Now().Unix(), separator,
 		len(summary), separator,
 		util.SumSlice(summary), separator,
 		summary,
 	))
+
+	if err != nil {
+		slog.Error("Error writing csv", "error", err)
+	}
 	file.Close()
 }
 
@@ -83,12 +88,12 @@ func initCsvFile(path string, sperator rune) *os.File {
 		os.Exit(internal_status.FILE_CREATION_ERROR)
 	}
 
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, util.DefaultFilePerms)
+	// Write flag too since this connection is being kept, so the connection can be re-used
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, util.DefaultFilePerms)
 	if err != nil {
 		slog.Error("Can't create log file", "error", err)
 		os.Exit(internal_status.FILE_CREATION_ERROR)
 	}
-	defer file.Close()
 
 	file.WriteString(fmt.Sprintf(
 		"'UNIX timestamp'%c'Total window count'%c'Total tab count'%c'List of total tabs per window'\n",
