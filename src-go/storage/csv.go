@@ -71,6 +71,10 @@ func getCsvName() string {
 		hostname = ""
 	}
 
+	if ApplicationSettings.IsDevelopmentBuild {
+		hostname += developmentFileAddition
+	}
+
 	return "tabUsage" + asciiHostnameToPascalCase(hostname) + ".csv"
 }
 

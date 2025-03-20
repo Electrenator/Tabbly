@@ -10,6 +10,8 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
+const developmentFileAddition = "-dev"
+
 var ApplicationSettings *util.Settings
 
 func copyFile(targetFileName string, copyFileName string) error {

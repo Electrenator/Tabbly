@@ -100,7 +100,7 @@ func getDbFileName() string {
 	tmpFileName := fmt.Sprintf("%s-%s", dbName, hostname)
 
 	if ApplicationSettings.IsDevelopmentBuild {
-		tmpFileName += "-dev"
+		tmpFileName += developmentFileAddition
 	}
 	return filepath.Join(ApplicationSettings.DataPath, tmpFileName+dbFileExt)
 }
