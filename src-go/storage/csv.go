@@ -2,7 +2,6 @@ package storage
 
 import (
 	"fmt"
-	"log"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -12,8 +11,6 @@ import (
 	internal_status "github.com/Electrenator/Tabbly/src-go/internal/status"
 	"github.com/Electrenator/Tabbly/src-go/util"
 )
-
-const defaultFilePath = "log/go_version"
 
 var previousTabCount int = -1
 
@@ -36,12 +33,7 @@ func SaveToCsv(browserList []browser.BrowserInfo) {
 	slog.Info("Tab change detected → Continuing to log")
 	previousTabCount = len(summary)
 
-	csvPath, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	csvPath = filepath.Join(csvPath, defaultFilePath, getCsvName())
+	csvPath := filepath.Join(ApplicationSettings.DataPath, getCsvName())
 	var file *os.File
 
 	if _, err := os.Stat(csvPath); err != nil {
@@ -50,11 +42,12 @@ func SaveToCsv(browserList []browser.BrowserInfo) {
 	}
 
 	if file == nil {
-		file, err = os.OpenFile(csvPath, os.O_WRONLY|os.O_APPEND, 0)
+		tmpFile, err := os.OpenFile(csvPath, os.O_WRONLY|os.O_APPEND, 0)
 		if err != nil {
 			slog.Error("Can't open csv for writing", "error", err)
 			os.Exit(internal_status.FILE_OPEN_ERROR)
 		}
+		file = tmpFile
 	}
 	defer file.Close()
 
@@ -78,7 +71,7 @@ func getCsvName() string {
 		hostname = ""
 	}
 
-	return "tabUsage" + asciiHostnameToPascalCase(hostname) + "V2.csv"
+	return "tabUsage" + asciiHostnameToPascalCase(hostname) + ".csv"
 }
 
 func initCsvFile(path string, sperator rune) *os.File {

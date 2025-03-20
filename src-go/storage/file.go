@@ -10,6 +10,8 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
+var ApplicationSettings *util.Settings
+
 func copyFile(targetFileName string, copyFileName string) error {
 	targetFile, err := os.Open(targetFileName)
 	if err != nil {

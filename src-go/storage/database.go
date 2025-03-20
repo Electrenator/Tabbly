@@ -20,7 +20,6 @@ import (
 const dbStructureDirectory = "database"
 
 var Databasefiles embed.FS
-var ApplicationSettings *util.Settings
 
 // Keeps track if the DB version has been checked since application start. Only
 // allow a DB version 1 time per start
