@@ -1,5 +1,7 @@
 # Program ignores
 log/
+**/*.sqlite
+**/*.bck
 
 # IDE files
 **/.vscode/
