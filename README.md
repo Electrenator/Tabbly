@@ -7,9 +7,16 @@ Ever surprised by how large your tab counter gets within your browser? Due to th
 
 Currently this application supports Firefox and it's development version. There are plans to support other browsers too (#26) but there currently isn't a timeline on that. Limitations being that the browsers should save session restore files for this application to read.
 
+## CLI arguments
+```
+Usage of tabbly:
+      --dryrun            Disable file writing
+      --interval uint16   Time between tab checks in seconds (default 60)
+  -v, --verbose           Verbose logging output
+```
 
 ## How to run
-To run this application one needs to *either* build the *Go version* or run the *Python version*. The Go version currently has to be manually build using `go build ./src-go/main.go`, which can be run. With the Python version requiring some more work.
+To run this application one needs to *either* build the *Go version* or run the *Python version*. The Go version currently has to be manually build using `go build ./src-go/main.go`, which creates an executable which can be run. With the Python version requiring some more work.
 
 ### Python version
 The python version need the following things installed;
@@ -34,4 +41,14 @@ Lastly the Python version also has development dependances. THese are only requi
 
 ```bash
 pip install -r requirements.dev.txt
+```
+
+## Development
+Within the Go version there is a trigger to allow changing between development and production mode. Dev mode can be compiled using the `-tabs dev` like the following;
+```sh
+go run -tags dev -v ./src-go
+```
+or
+```sh
+go build -tags dev ./src-go/main.go
 ```

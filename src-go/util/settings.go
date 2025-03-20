@@ -23,7 +23,7 @@ const DefaultFilePerms = 0660
 
 func InitSettings() Settings {
 	verboseFlag := pflag.BoolP("verbose", "v", false, "Verbose logging output")
-	dryRunFlag := pflag.Bool("dryrun", false, "Verbose logging output")
+	dryRunFlag := pflag.Bool("dryrun", false, "Disable file writing")
 	intervalFlag := pflag.Uint16("interval", 60, "Time between tab checks in seconds")
 	applicationStorageLocation := getApplicationStorageLocation()
 
