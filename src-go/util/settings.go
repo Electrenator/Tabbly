@@ -11,11 +11,12 @@ import (
 )
 
 type Settings struct {
-	Verbose            bool
-	DryRun             bool
-	IsDevelopmentBuild bool
-	UpdateInterval     uint16
-	DataPath           string
+	Verbose             bool
+	DryRun              bool
+	IsDevelopmentBuild  bool
+	UpdateInterval      uint16
+	DataPath            string
+	LegacyFileForImport string
 }
 
 const DefaultDirPerms = 0755
@@ -25,15 +26,17 @@ func InitSettings() Settings {
 	verboseFlag := pflag.BoolP("verbose", "v", false, "Verbose logging output")
 	dryRunFlag := pflag.Bool("dryrun", false, "Disable file writing")
 	intervalFlag := pflag.Uint16("interval", 60, "Time between tab checks in seconds")
+	legacyFileToImport := pflag.String("import-legacy", "", "Legacy file to import into application database")
 	applicationStorageLocation := getApplicationStorageLocation()
 
 	pflag.Parse()
 	settings := Settings{
-		Verbose:            *verboseFlag,
-		DryRun:             *dryRunFlag,
-		IsDevelopmentBuild: isDevelopmentBuild,
-		UpdateInterval:     *intervalFlag,
-		DataPath:           applicationStorageLocation,
+		Verbose:             *verboseFlag,
+		DryRun:              *dryRunFlag,
+		IsDevelopmentBuild:  isDevelopmentBuild,
+		UpdateInterval:      *intervalFlag,
+		DataPath:            applicationStorageLocation,
+		LegacyFileForImport: *legacyFileToImport,
 	}
 	return settings
 }

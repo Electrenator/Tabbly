@@ -4,10 +4,12 @@ import (
 	"embed"
 	"fmt"
 	"log/slog"
+	"os"
 	"runtime"
 	"time"
 
 	"github.com/Electrenator/Tabbly/src-go/browser"
+	internal_status "github.com/Electrenator/Tabbly/src-go/internal/status"
 	"github.com/Electrenator/Tabbly/src-go/storage"
 	"github.com/Electrenator/Tabbly/src-go/util"
 )
@@ -23,8 +25,13 @@ func main() {
 	if !settings.Verbose {
 		slog.SetLogLoggerLevel(slog.LevelWarn)
 	}
-
 	slog.Info(fmt.Sprintf("Application settings: %+v\n", settings))
+
+	if settings.LegacyFileForImport != "" {
+		storage.ImportLegacyCsv(settings.LegacyFileForImport)
+		os.Exit(internal_status.OK)
+	}
+
 	for {
 		availableBrowsers := browser.GetAvailableBrowsers()
 		stats := []browser.BrowserInfo{}

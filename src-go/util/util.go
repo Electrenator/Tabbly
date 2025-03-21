@@ -43,3 +43,21 @@ func SumSlice[T ~int](slice []T) T {
 
 	return sum
 }
+
+// Checks if two slices are the same both in length and there values.
+//
+// Note: this isn't tested on slices with slices in them and likely isn't accurate for that case.
+func SameSlice[T comparable](a, b []T) bool {
+	if a == nil {
+		return b == nil
+	}
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
