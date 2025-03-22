@@ -3,6 +3,7 @@ package storage
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"os"
@@ -27,6 +28,7 @@ var legacyCsvHeader = fmt.Sprintf(
 	"'UNIX timestamp'%c'Total window count'%c'Total tab count'%c'List of total tabs per window'",
 	separator, separator, separator,
 )
+var standardLegacyBrowser = browser.GetFirefoxBrowser().GetName()
 
 var previousTabCount int = -1
 
@@ -125,23 +127,33 @@ func ImportLegacyCsv(filepath string) {
 		os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 	}
 
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
+	var lastTimestamp int64
+	var lastTabsPerWindow []browser.WindowInfo
+	windowsTimeMap := make(map[int64]*browser.BrowserInfo)
 
+	for scanner.Scan() {
 		timestamp, browserInfo, err := legacyCsvLineToBrowserInfo(scanner.Bytes())
+
 		if err != nil {
 			slog.Error(err.Error())
 			os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 		}
-		if timestamp != nil && browserInfo != nil {
-			fmt.Printf("%d: %+v\n", *timestamp, *browserInfo)
+
+		if *timestamp == lastTimestamp || util.SameSlice(browserInfo.Windows, lastTabsPerWindow) {
+			continue
 		}
+
+		windowsTimeMap[*timestamp] = browserInfo
+		lastTimestamp = *timestamp
+		lastTabsPerWindow = browserInfo.Windows
 	}
 
 	if err := scanner.Err(); err != nil {
-		slog.Error("", "error", err)
+		slog.Error("Issue reading file", "error", err)
 		os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 	}
+
+	// Todo : save to DB
 }
 
 func isLegacyCsv(scanner *bufio.Scanner) bool {
@@ -152,15 +164,15 @@ func isLegacyCsv(scanner *bufio.Scanner) bool {
 
 func legacyCsvLineToBrowserInfo(line []byte) (*int64, *browser.BrowserInfo, error) {
 	var windowCount, tabCount int
-	standardLegacyBrowser := browser.GetFirefoxBrowser().GetName()
 	lineParts := bytes.Split(line, []byte{separator})
-	timestamp, err := strconv.ParseInt(string(lineParts[legacyCsvTimestamp]), 10, 64)
+	timestampFloat, err := strconv.ParseFloat(string(lineParts[legacyCsvTimestamp]), 64)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("unable to read timestamp of '%s': %w",
 			lineParts[legacyCsvTimestamp], err)
 	}
 
+	timestamp := int64(timestampFloat)
 	windowCount, err = strconv.Atoi(string(lineParts[legacyCsvWindowCount]))
 
 	if err == nil && windowCount == 0 {
@@ -177,9 +189,55 @@ func legacyCsvLineToBrowserInfo(line []byte) (*int64, *browser.BrowserInfo, erro
 		return nil, nil, err
 	}
 
+	if len(lineParts[legacyCsvTabsPerWindow]) == 0 {
+		// State with old csv saves → has no tabs per window
+		return &timestamp, &browser.BrowserInfo{
+			Name:    standardLegacyBrowser,
+			IsOpen:  1,
+			Windows: generateLegacyTabsPerWindow(windowCount, tabCount),
+		}, nil
+	}
+	windowInfo, err := parseLegacyTabsPerWindow(lineParts[legacyCsvTabsPerWindow])
+
+	if err != nil {
+		return nil, nil, err
+	}
 	return &timestamp, &browser.BrowserInfo{
 		Name:    standardLegacyBrowser,
-		IsOpen:  0,
-		Windows: []browser.WindowInfo{{TabCount: tabCount}}, // TOdo
+		IsOpen:  1,
+		Windows: windowInfo,
 	}, nil
+}
+
+// Legacy csv had a point where it didn't have tabs per window. This function adds extra 1 size
+// windows, so that they are still taken into account within the history even though there not accurate.
+func generateLegacyTabsPerWindow(windowCount int, tabCount int) []browser.WindowInfo {
+	if windowCount <= 0 {
+		return nil
+	}
+	windowInfo := []browser.WindowInfo{{TabCount: tabCount - (windowCount - 1)}}
+
+	for range windowCount - 1 {
+		windowInfo = append(windowInfo, browser.WindowInfo{TabCount: 1})
+	}
+	return windowInfo
+}
+
+// Parses the json array of tabs per window from the legacy csv. Data looks like;
+//
+//	[1, 2, 3]
+func parseLegacyTabsPerWindow(rawJson []byte) ([]browser.WindowInfo, error) {
+	var tabsPerWindow []int
+
+	err := json.Unmarshal(rawJson, &tabsPerWindow)
+
+	if err != nil {
+		return nil, err
+	}
+	windowInfo := make([]browser.WindowInfo, len(tabsPerWindow))
+
+	for i, tabCount := range tabsPerWindow {
+		windowInfo[i] = browser.WindowInfo{TabCount: tabCount}
+	}
+	return windowInfo, nil
 }
