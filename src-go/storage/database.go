@@ -127,13 +127,19 @@ func saveToDbUsingConnection(time int64, browserInfoList []browser.BrowserInfo, 
 	return nil
 }
 
-// returns the DB file name in the format:
+// Returns the DB file path in the following format where hostname will be
+// replaced with the current devices name
 //
-//	[DataPath]/dbName-hostname[-dev].sqlite
-func getDbFileName() string {
-	const dbName = "test"
+//	[DataPath]/tabs-hostname[-dev].sqlite
+func getDbFilePath() string {
+	const dbName = "tabs"
 	const dbFileExt = ".sqlite"
+
+	if ApplicationSettings.PreferredDbSavePath != "" {
+		return ApplicationSettings.PreferredDbSavePath
+	}
 	hostname, err := os.Hostname()
+
 	if err != nil {
 		hostname = ""
 	}
@@ -155,14 +161,14 @@ func connectToDb() (*sql.DB, error) {
 		os.Exit(internal_status.FILE_CREATION_ERROR)
 	}
 
-	if file, err := os.OpenFile(getDbFileName(), os.O_CREATE, util.DefaultFilePerms); err != nil {
+	if file, err := os.OpenFile(getDbFilePath(), os.O_CREATE, util.DefaultFilePerms); err != nil {
 		slog.Error("Unable to create DB file!", "error", err)
 		os.Exit(internal_status.FILE_CREATION_ERROR)
 	} else {
 		file.Close()
 	}
 
-	db, err := sql.Open("sqlite3", "file:"+getDbFileName())
+	db, err := sql.Open("sqlite3", "file:"+getDbFilePath())
 	if err != nil {
 		return nil, err
 	}
@@ -244,7 +250,7 @@ func getCurrentDbSchemaVersion(db *sql.DB) int {
 
 func migrateDatabase(db *sql.DB, fromVersion int) error {
 	if fromVersion >= 0 {
-		err := copyFile(getDbFileName(), fmt.Sprintf("%s.v%d.bck", getDbFileName(), fromVersion))
+		err := copyFile(getDbFilePath(), fmt.Sprintf("%s.v%d.bck", getDbFilePath(), fromVersion))
 		if err != nil {
 			return fmt.Errorf("unable to create db backup: %s", err.Error())
 		}

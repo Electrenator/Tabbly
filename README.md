@@ -10,9 +10,11 @@ Currently this application supports Firefox and it's development version. There 
 ## CLI arguments
 ```
 Usage of tabbly:
-      --dryrun            Disable file writing
-      --interval uint16   Time between tab checks in seconds (default 60)
-  -v, --verbose           Verbose logging output
+      --db-location string     Override where the db will be saved. Handy in combination with '--import-legacy'
+      --dryrun                 Disable file writing
+      --import-legacy string   Legacy file to import into application database
+      --interval uint16        Time between tab checks in seconds (default 60)
+  -v, --verbose                Verbose logging output
 ```
 
 ## How to run

@@ -17,19 +17,32 @@ type Settings struct {
 	UpdateInterval      uint16
 	DataPath            string
 	LegacyFileForImport string
+	PreferredDbSavePath string
 }
 
 const DefaultDirPerms = 0755
 const DefaultFilePerms = 0660
 
 func InitSettings() Settings {
-	verboseFlag := pflag.BoolP("verbose", "v", false, "Verbose logging output")
-	dryRunFlag := pflag.Bool("dryrun", false, "Disable file writing")
-	intervalFlag := pflag.Uint16("interval", 60, "Time between tab checks in seconds")
-	legacyFileToImport := pflag.String("import-legacy", "", "Legacy file to import into application database")
 	applicationStorageLocation := getApplicationStorageLocation()
-
+	verboseFlag := pflag.BoolP("verbose", "v", false, "Verbose logging output")
+	intervalFlag := pflag.Uint16("interval", 60, "Time between tab checks in seconds")
+	dryRunFlag := pflag.Bool("dryrun", false, "Disable file writing")
+	legacyFileToImport := pflag.String("import-legacy", "", "Legacy file to import into application database")
+	dbSaveLocation := pflag.String("db-location", "",
+		"Override where the db will be saved. Handy in combination with '--import-legacy'",
+	)
 	pflag.Parse()
+
+	if *dbSaveLocation != "" {
+		absoluteSavePath, err := filepath.Abs(*dbSaveLocation)
+		if err != nil {
+			slog.Error("Unable to expand db location", "path", *dbSaveLocation, "error", err)
+			os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
+		}
+		dbSaveLocation = &absoluteSavePath
+	}
+
 	settings := Settings{
 		Verbose:             *verboseFlag,
 		DryRun:              *dryRunFlag,
@@ -37,6 +50,7 @@ func InitSettings() Settings {
 		UpdateInterval:      *intervalFlag,
 		DataPath:            applicationStorageLocation,
 		LegacyFileForImport: *legacyFileToImport,
+		PreferredDbSavePath: *dbSaveLocation,
 	}
 	return settings
 }
