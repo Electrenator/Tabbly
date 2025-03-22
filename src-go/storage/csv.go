@@ -139,7 +139,10 @@ func ImportLegacyCsv(filepath string) {
 			os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 		}
 
-		if *timestamp == lastTimestamp || util.SameSlice(browserInfo.Windows, lastTabsPerWindow) {
+		// Is data not already in read before?
+		if *timestamp == lastTimestamp || util.SameSlice(browserInfo.Windows, lastTabsPerWindow) ||
+			// While at it, do a little sanity check for the tab count
+			browserInfo.TotalTabs()-len(browserInfo.Windows) <= 0 {
 			continue
 		}
 

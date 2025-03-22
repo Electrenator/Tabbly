@@ -6,6 +6,15 @@ type BrowserInfo struct {
 	Windows []WindowInfo
 }
 
+// Get the total number of tabs within this browser.
+func (info *BrowserInfo) TotalTabs() int {
+	sum := 0
+	for _, tabs := range info.Windows {
+		sum += tabs.TabCount
+	}
+	return sum
+}
+
 type WindowInfo struct {
 	TabCount int
 }
