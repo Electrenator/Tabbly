@@ -25,7 +25,12 @@ var Databasefiles embed.FS
 // allow a DB version 1 time per start
 var checkedDbSchemaVersion = false
 
-// Todo; Make smarter. Only insert changed browsers. Also add an empty browser entry when the browser closed
+type TimedBrowserInfo struct {
+	Timestamp   int64
+	BrowserInfo browser.BrowserInfo
+}
+
+// Save a single entry with multiple browsers to the database at the current timestamp.
 func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	db, err := connectToDb()
 	if err != nil {
@@ -35,8 +40,45 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	defer db.Close()
 
 	db.Exec("BEGIN TRANSACTION")
+	err = saveToDbUsingConnection(time.Now().Unix(), browserInfoList, db)
 
-	time := time.Now().Unix()
+	if err != nil {
+		dbErrorRollback(db, err)
+	}
+	db.Exec("COMMIT")
+}
+
+// Save multiple info entries from different timestamps to the database from **1**
+// browser per entry.
+func SaveMultipleToDb(timeBrowserInfoMap *[]TimedBrowserInfo) error {
+	db, err := connectToDb()
+	if err != nil {
+		slog.Error("Unable to connect to database", "error", err)
+		os.Exit(internal_status.DB_CONNECT_ERROR)
+	}
+	defer db.Close()
+
+	db.Exec("BEGIN TRANSACTION")
+
+	for _, timedBrowserInfo := range *timeBrowserInfoMap {
+		err := saveToDbUsingConnection(
+			timedBrowserInfo.Timestamp,
+			[]browser.BrowserInfo{timedBrowserInfo.BrowserInfo},
+			db,
+		)
+		if err != nil {
+			dbErrorRollback(db, err)
+			return err
+		}
+	}
+	db.Exec("COMMIT")
+	return nil
+}
+
+// Save entry to the database at a specified timestamp. This can re-use an existing DB connection.
+//
+// Todo; Make smarter. Only insert changed browsers. Also add an empty browser entry when the browser closed
+func saveToDbUsingConnection(time int64, browserInfoList []browser.BrowserInfo, db *sql.DB) error {
 
 	for _, browser := range browserInfoList {
 		var browserId int64
@@ -53,7 +95,7 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 		}
 		if err != nil {
 			dbErrorRollback(db, err)
-			return
+			return err
 		}
 
 		result, err := db.Exec(
@@ -62,13 +104,13 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 		)
 		if err != nil {
 			dbErrorRollback(db, err)
-			return
+			return err
 		}
 
 		entryId, err := result.LastInsertId()
 		if err != nil {
 			dbErrorRollback(db, err)
-			return
+			return err
 		}
 
 		for _, window := range browser.Windows {
@@ -78,12 +120,11 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 			)
 			if err != nil {
 				dbErrorRollback(db, err)
-				return
+				return err
 			}
 		}
 	}
-
-	db.Exec("COMMIT")
+	return nil
 }
 
 // returns the DB file name in the format:

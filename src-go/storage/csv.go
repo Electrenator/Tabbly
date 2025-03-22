@@ -129,7 +129,7 @@ func ImportLegacyCsv(filepath string) {
 
 	var lastTimestamp int64
 	var lastTabsPerWindow []browser.WindowInfo
-	windowsTimeMap := make(map[int64]*browser.BrowserInfo)
+	var windowsTimeMap []TimedBrowserInfo
 
 	for scanner.Scan() {
 		timestamp, browserInfo, err := legacyCsvLineToBrowserInfo(scanner.Bytes())
@@ -143,7 +143,10 @@ func ImportLegacyCsv(filepath string) {
 			continue
 		}
 
-		windowsTimeMap[*timestamp] = browserInfo
+		windowsTimeMap = append(windowsTimeMap, TimedBrowserInfo{
+			Timestamp:   *timestamp,
+			BrowserInfo: *browserInfo,
+		})
 		lastTimestamp = *timestamp
 		lastTabsPerWindow = browserInfo.Windows
 	}
@@ -153,7 +156,10 @@ func ImportLegacyCsv(filepath string) {
 		os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 	}
 
-	// Todo : save to DB
+	if err := SaveMultipleToDb(&windowsTimeMap); err != nil {
+		// Already logged in DB rollback
+		os.Exit(internal_status.DB_CONNECT_ERROR)
+	}
 }
 
 func isLegacyCsv(scanner *bufio.Scanner) bool {
