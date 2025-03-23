@@ -130,6 +130,7 @@ func ImportLegacyCsv(filepath string) {
 	var lastTimestamp int64
 	var lastTabsPerWindow []browser.WindowInfo
 	var windowsTimeMap []TimedBrowserInfo
+	var totalWindowCount int
 
 	for scanner.Scan() {
 		timestamp, browserInfo, err := legacyCsvLineToBrowserInfo(scanner.Bytes())
@@ -152,12 +153,17 @@ func ImportLegacyCsv(filepath string) {
 		})
 		lastTimestamp = *timestamp
 		lastTabsPerWindow = browserInfo.Windows
+		totalWindowCount += len(browserInfo.Windows)
 	}
 
 	if err := scanner.Err(); err != nil {
 		slog.Error("Issue reading file", "error", err)
 		os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 	}
+	slog.Info("Scanned legacy save!",
+		"totalDeduplicatedEntries", len(windowsTimeMap),
+		"totalWindowRecords", totalWindowCount,
+	)
 
 	if err := SaveMultipleToDb(&windowsTimeMap); err != nil {
 		// Already logged in DB rollback

@@ -31,7 +31,8 @@ type TimedBrowserInfo struct {
 	BrowserInfo browser.BrowserInfo
 }
 
-// Save a single entry with multiple browsers to the database at the current timestamp.
+// Save a single entry with multiple browsers to the database at the current
+// timestamp.
 func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	db, err := connectToDb()
 	if err != nil {
@@ -41,7 +42,7 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	defer db.Close()
 
 	db.Exec("BEGIN TRANSACTION")
-	err = saveToDbUsingConnection(time.Now().Unix(), browserInfoList, db)
+	err = saveToDbUsingConnection(time.Now().Unix(), browserInfoList, db, true)
 
 	if err != nil {
 		dbErrorRollback(db, err)
@@ -66,6 +67,7 @@ func SaveMultipleToDb(timeBrowserInfoMap *[]TimedBrowserInfo) error {
 			timedBrowserInfo.Timestamp,
 			[]browser.BrowserInfo{timedBrowserInfo.BrowserInfo},
 			db,
+			false,
 		)
 		if err != nil {
 			dbErrorRollback(db, err)
@@ -76,63 +78,75 @@ func SaveMultipleToDb(timeBrowserInfoMap *[]TimedBrowserInfo) error {
 	return nil
 }
 
-// Save entry to the database at a specified timestamp. This can re-use an existing DB connection.
-func saveToDbUsingConnection(time int64, browserInfoList []browser.BrowserInfo, db *sql.DB) error {
+// Save entry to the database at a specified timestamp. This can re-use an
+// existing DB connection.
+func saveToDbUsingConnection(time int64, browserInfoList []browser.BrowserInfo,
+	db *sql.DB, enableChangeLogging bool,
+) error {
 	for _, browser := range browserInfoList {
-		if lastBrowserDbEntry[browser.Name] != nil && util.SameSlice(browser.Windows, *lastBrowserDbEntry[browser.Name]) {
+		if lastBrowserDbEntry[browser.Name] != nil &&
+			util.SameSlice(browser.Windows, *lastBrowserDbEntry[browser.Name]) {
 			continue
-
 		}
-		slog.Info("Browser windows changed",
-			"browser", browser.Name,
-			"newEntry", browser.Windows,
-			"oldEntry", lastBrowserDbEntry[browser.Name],
-		)
-
-		var browserId int64
-		err := db.QueryRow("SELECT `id` FROM `Browser` WHERE `name` == ?", browser.Name).Scan(&browserId)
-
-		if err == sql.ErrNoRows {
-			result, insertErr := db.Exec("INSERT INTO `Browser` (`name`) VALUES (?)", browser.Name)
-
-			if insertErr != nil {
-				err = insertErr
-			} else {
-				browserId, err = result.LastInsertId()
-			}
-		}
-		if err != nil {
-			dbErrorRollback(db, err)
-			return err
-		}
-
-		result, err := db.Exec(
-			"INSERT INTO `Entry` (`timestamp`, `browserId`) VALUES (?, ?)",
-			time, browserId,
-		)
-		if err != nil {
-			dbErrorRollback(db, err)
-			return err
-		}
-
-		entryId, err := result.LastInsertId()
-		if err != nil {
-			dbErrorRollback(db, err)
-			return err
-		}
-
-		for _, window := range browser.Windows {
-			_, err = db.Exec(
-				"INSERT INTO `Window` (`entryId`, `openTabs`) VALUES (?, ?)",
-				entryId, window.TabCount,
+		if enableChangeLogging {
+			slog.Info("Browser windows changed",
+				"browser", browser.Name,
+				"newEntry", browser.Windows,
+				"oldEntry", lastBrowserDbEntry[browser.Name],
 			)
-			if err != nil {
-				dbErrorRollback(db, err)
-				return err
-			}
 		}
-		lastBrowserDbEntry[browser.Name] = &browser.Windows
+		if err := saveBrowserEntryToDbUsingConnection(time, browser, db); err != nil {
+			return err
+		}
+
 	}
+	return nil
+}
+
+func saveBrowserEntryToDbUsingConnection(time int64, browser browser.BrowserInfo, db *sql.DB) error {
+	var browserId int64
+	err := db.QueryRow("SELECT `id` FROM `Browser` WHERE `name` == ?", browser.Name).Scan(&browserId)
+
+	if err == sql.ErrNoRows {
+		result, insertErr := db.Exec("INSERT INTO `Browser` (`name`) VALUES (?)", browser.Name)
+
+		if insertErr != nil {
+			err = insertErr
+		} else {
+			browserId, err = result.LastInsertId()
+		}
+	}
+	if err != nil {
+		dbErrorRollback(db, err)
+		return err
+	}
+
+	result, err := db.Exec(
+		"INSERT INTO `Entry` (`timestamp`, `browserId`) VALUES (?, ?)",
+		time, browserId,
+	)
+	if err != nil {
+		dbErrorRollback(db, err)
+		return err
+	}
+
+	entryId, err := result.LastInsertId()
+	if err != nil {
+		dbErrorRollback(db, err)
+		return err
+	}
+
+	for _, window := range browser.Windows {
+		_, err = db.Exec(
+			"INSERT INTO `Window` (`entryId`, `openTabs`) VALUES (?, ?)",
+			entryId, window.TabCount,
+		)
+		if err != nil {
+			dbErrorRollback(db, err)
+			return err
+		}
+	}
+	lastBrowserDbEntry[browser.Name] = &browser.Windows
 	return nil
 }
 
