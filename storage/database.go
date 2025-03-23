@@ -304,7 +304,7 @@ func migrateDatabase(db *sql.DB, fromVersion int) error {
 
 		slog.Info(fmt.Sprintf("Running migration to version %d", fileVersion))
 
-		fileData, err := Databasefiles.ReadFile(filepath.Join(dbStructureDirectory, file.Name()))
+		fileData, err := Databasefiles.ReadFile(fmt.Sprintf("%s/%s", dbStructureDirectory, file.Name()))
 		if err != nil {
 			return err
 		}

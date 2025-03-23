@@ -35,6 +35,9 @@ func GetFirefoxBrowser() Browser {
 				// - Fedora ?
 				// - Manjaro 25.0.0 (Zetar)
 				"~/.mozilla/firefox*/*.default-release/sessionstore-backups/recovery.jsonlz4",
+				// Found on:
+				// - Windows 11
+				"%APPDATA%/Mozilla/Firefox/Profiles/*.default-release-*/sessionstore-backups/recovery.jsonlz4",
 			},
 		},
 	}

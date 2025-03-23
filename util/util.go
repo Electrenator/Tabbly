@@ -1,6 +1,7 @@
 package util
 
 import (
+	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
@@ -15,8 +16,16 @@ func StringContains(haystack string, needle string) bool {
 
 func ExpandHomeDirectory(path string) (string, error) {
 	usr, err := user.Current()
-	if err == nil && strings.HasPrefix(path, "~/") {
-		path = filepath.Join(usr.HomeDir, path[2:])
+	if err == nil {
+		if strings.HasPrefix(path, "~/") {
+			path = filepath.Join(usr.HomeDir, path[2:])
+		} else if strings.HasPrefix(path, "%APPDATA%") {
+			appDataPath, err := os.UserConfigDir()
+			if err != nil {
+				return path, err
+			}
+			path = strings.Replace(path, "%APPDATA%", appDataPath, 1)
+		}
 	}
 	return path, err
 }

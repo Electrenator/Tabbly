@@ -69,7 +69,7 @@ func (browser *AbstractBrowser) getSessionStorageLocation() []string {
 		pattern, err := util.ExpandHomeDirectory(pattern)
 		if err != nil {
 			slog.Error(
-				"Can't get current user for '~' expansion",
+				"Can't get current user for home directory expansion",
 				"error", err,
 			)
 		}
