@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"path/filepath"
 
-	"github.com/Electrenator/Tabbly/src-go/util"
+	"github.com/Electrenator/tabbly/util"
 	"github.com/shirou/gopsutil/v4/process"
 )
 

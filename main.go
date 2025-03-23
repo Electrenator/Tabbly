@@ -8,10 +8,10 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/Electrenator/Tabbly/src-go/browser"
-	internal_status "github.com/Electrenator/Tabbly/src-go/internal/status"
-	"github.com/Electrenator/Tabbly/src-go/storage"
-	"github.com/Electrenator/Tabbly/src-go/util"
+	"github.com/Electrenator/tabbly/browser"
+	internal_status "github.com/Electrenator/tabbly/internal/status"
+	"github.com/Electrenator/tabbly/storage"
+	"github.com/Electrenator/tabbly/util"
 )
 
 //go:embed database/*

@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Electrenator/Tabbly/src-go/util"
+	"github.com/Electrenator/tabbly/util"
 	"github.com/dustin/go-humanize"
 )
 

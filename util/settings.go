@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	internal_status "github.com/Electrenator/Tabbly/src-go/internal/status"
+	internal_status "github.com/Electrenator/tabbly/internal/status"
 	"github.com/spf13/pflag"
 )
 
