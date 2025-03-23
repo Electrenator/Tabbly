@@ -44,6 +44,12 @@ func main() {
 					IsOpen:  state,
 					Windows: browserInst.GetherWindowData(),
 				})
+			} else {
+				stats = append(stats, browser.BrowserInfo{
+					Name:    browserInst.GetName(),
+					IsOpen:  state,
+					Windows: nil,
+				})
 			}
 		}
 
