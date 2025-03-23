@@ -66,7 +66,7 @@ func (browser *AbstractBrowser) getSessionStorageLocation() []string {
 	var expandedPaths []string
 
 	for _, pattern := range browser.storageLocations {
-		pattern, err := util.ExpandHomeDirectory(pattern)
+		pattern, err := util.ExpandUserDirectory(pattern)
 		if err != nil {
 			slog.Error(
 				"Can't get current user for home directory expansion",

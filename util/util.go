@@ -14,7 +14,7 @@ func StringContains(haystack string, needle string) bool {
 	)
 }
 
-func ExpandHomeDirectory(path string) (string, error) {
+func ExpandUserDirectory(path string) (string, error) {
 	usr, err := user.Current()
 	if err == nil {
 		if strings.HasPrefix(path, "~/") {
