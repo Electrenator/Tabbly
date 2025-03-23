@@ -56,7 +56,7 @@ func SaveMultipleToDb(timeBrowserInfoMap *[]TimedBrowserInfo) error {
 	db, err := connectToDb()
 	if err != nil {
 		slog.Error("Unable to connect to database", "error", err)
-		os.Exit(internal_status.DB_CONNECT_ERROR)
+		return err
 	}
 	defer db.Close()
 
