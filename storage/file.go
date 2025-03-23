@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Electrenator/tabbly/util"
 	"github.com/dustin/go-humanize"
+	"github.com/electrenator/tabbly/util"
 )
 
 const developmentFileAddition = "-dev"

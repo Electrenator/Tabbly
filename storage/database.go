@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Electrenator/tabbly/browser"
-	internal_status "github.com/Electrenator/tabbly/internal/status"
-	"github.com/Electrenator/tabbly/util"
+	"github.com/electrenator/tabbly/browser"
+	internal_status "github.com/electrenator/tabbly/internal/status"
+	"github.com/electrenator/tabbly/util"
 	_ "github.com/mattn/go-sqlite3"
 )
 

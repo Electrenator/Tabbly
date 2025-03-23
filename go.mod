@@ -1,4 +1,4 @@
-module github.com/Electrenator/tabbly
+module github.com/electrenator/tabbly
 
 go 1.24.0
 

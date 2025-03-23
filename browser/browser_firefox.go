@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/Electrenator/tabbly/util"
 	"github.com/dustin/go-humanize"
+	"github.com/electrenator/tabbly/util"
 	"github.com/giulianopz/go-dejsonlz4/jsonlz4"
 	"github.com/itchyny/gojq"
 )
