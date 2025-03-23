@@ -28,7 +28,10 @@ func InitSettings() Settings {
 	verboseFlag := pflag.BoolP("verbose", "v", false, "Verbose logging output")
 	intervalFlag := pflag.Uint16("interval", 60, "Time between tab checks in seconds")
 	dryRunFlag := pflag.Bool("dryrun", false, "Disable file writing")
-	legacyFileToImport := pflag.String("import-legacy", "", "Legacy file to import into application database")
+	legacyFileToImport := pflag.String("import-legacy", "", "Legacy file to import into "+
+		"application database. Not recommended to import into already existing database "+
+		"files given it doesn't sort imported entries",
+	)
 	dbSaveLocation := pflag.String("db-location", "",
 		"Override where the db will be saved. Handy in combination with '--import-legacy'",
 	)

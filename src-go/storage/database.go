@@ -24,6 +24,7 @@ var Databasefiles embed.FS
 // Keeps track if the DB version has been checked since application start. Only
 // allow a DB version 1 time per start
 var checkedDbSchemaVersion = false
+var lastBrowserDbEntry map[string]*[]browser.WindowInfo = make(map[string]*[]browser.WindowInfo)
 
 type TimedBrowserInfo struct {
 	Timestamp   int64
@@ -76,11 +77,18 @@ func SaveMultipleToDb(timeBrowserInfoMap *[]TimedBrowserInfo) error {
 }
 
 // Save entry to the database at a specified timestamp. This can re-use an existing DB connection.
-//
-// Todo; Make smarter. Only insert changed browsers. Also add an empty browser entry when the browser closed
 func saveToDbUsingConnection(time int64, browserInfoList []browser.BrowserInfo, db *sql.DB) error {
-
 	for _, browser := range browserInfoList {
+		if lastBrowserDbEntry[browser.Name] != nil && util.SameSlice(browser.Windows, *lastBrowserDbEntry[browser.Name]) {
+			continue
+
+		}
+		slog.Info("Browser windows changed",
+			"browser", browser.Name,
+			"newEntry", browser.Windows,
+			"oldEntry", lastBrowserDbEntry[browser.Name],
+		)
+
 		var browserId int64
 		err := db.QueryRow("SELECT `id` FROM `Browser` WHERE `name` == ?", browser.Name).Scan(&browserId)
 
@@ -123,6 +131,7 @@ func saveToDbUsingConnection(time int64, browserInfoList []browser.BrowserInfo, 
 				return err
 			}
 		}
+		lastBrowserDbEntry[browser.Name] = &browser.Windows
 	}
 	return nil
 }
