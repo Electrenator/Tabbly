@@ -1,35 +1,44 @@
 # Tabbly
-A program for showing your tab usage within Discord's rich presence and to log that usage. Currently only supports usage on Firefox within GNU/Linux. If you want to help bring this little script to your OS of choice, don't be afraid to create a pull request :)
+[![Go Reference](https://pkg.go.dev/badge/github.com/electrenator/tabbly.svg)](https://pkg.go.dev/github.com/electrenator/tabbly)
+[![Go Report Card](https://goreportcard.com/badge/github.com/electrenator/tabbly)](https://goreportcard.com/report/github.com/electrenator/tabbly)
 
-![Tabbly in use within Discord. The application is displaying the usage of 83 active browser tabs.](https://user-images.githubusercontent.com/18311389/151074155-78ccf239-5127-4e7a-8380-f7038ade6338.png)
+Ever surprised by how large your tab counter gets within your browser? Due to them still being "needed" sometime or when you accumulate some information for an active project? Well this application is to help one keep track of that usage and gather data on which browser window has how many tabs open. Hope to one day create of this.
+
+Currently this application supports Firefox and it's development version. There are plans to support other browsers too ([#26](https://github.com/electrenator/tabbly/issues/26)) but there currently isn't a timeline on that. Limitations being that the browsers should save session restore files for this application to read.
+
+## CLI arguments
+```
+Usage of tabbly:
+      --db-location string     Override where the db will be saved. Handy in combination with '--import-legacy'
+      --import-legacy string   Legacy file to import into application database. Not recommended to import into already existing database files given it doesn't sort imported entries
+      --interval uint16        Time between tab checks in seconds (default 60)
+  -v, --verbose                Verbose logging output
+```
 
 ## How to run
-You will firstly need to have the following things installed and have access to a terminal within the project's folder.
-- Python 3.8+
-- Python 3.8+ PIP
+To run this application one needs to build or install the application. The current version currently has to be manually build using `go build .`, which creates an executable which can be run.
 
-### TL;DR
-Use the following command within bash **And** make sure `Display current activity as a status message.` is enabled within the privacy settings!
-```bash
-python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python src/main.py; deactivate
+Next to that one can also install this application using Go it's install.
+```
+go install github.com/electrenator/tabbly@latest
+``` 
+That makes it available at `~/go/bin/tabbly` to execute. One can execute it by calling that or if you have Go in your [PATH variable](https://go.dev/doc/install) one can directly execute it with `tabbly` in your CLI.
+
+**Note**: installing it that way does *requires* `CGO` to be enabled and the `gcc` compiler to be percent. This is a requirement from the [go-sqlite3](https://github.com/mattn/go-sqlite3?tab=readme-ov-file#installation) dependency.
+
+## Automatic starting
+Currently the only way to automatically start this application *on Linux* is to add it to cron after install using adding something along the lines of the following to your cron config;
+```cron
+@reboot ~/go/bin/tabbly
 ```
 
-### Full explanation
-After installing that, you will need a virtual environment for python to run in. This can be created and entered with the following command on GNU/Linux. It may be necessary to type `python3` instead of `python` if you also have Python version 2 installed.
-```bash
-python -m venv venv
-source venv/bin/activate
+## Development
+Within th application there is a trigger to allow changing between development and production mode. This only changes the file save locations and adds `-dev` to filenames before there extension.  
+Dev mode can be compiled using the `-tabs dev` like the following;
+```sh
+go run -tags dev -v .
 ```
-Note: this virtual environment can be deactivated with the `deactivate` command and cleaned up after by just removing the `venv` folder.
-
-Finally you will need to install the dependencies of this program. This can be done with the following command but `pip` may need to be replaced with `pip3` depending on what's installed on your PC.
-```bash
-pip install -r requirements.txt
-```
-Now you can run `python src/main.py` to start running the program. The only thing you need to make sure of now is that the `Display current activity as a status message.` setting is enabled within Discord. Tabbly won't show anything if it isn't.
-
-
-Note: When you want to contribute, you should probably also add the dev dependencies so pylint and black can be used during development. This can be done in the venv described above using the following command.
-```bash
-pip install -r requirements.dev.txt
+or
+```sh
+go build -tags dev
 ```
