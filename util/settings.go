@@ -12,7 +12,6 @@ import (
 
 type Settings struct {
 	Verbose             bool
-	DryRun              bool
 	IsDevelopmentBuild  bool
 	UpdateInterval      uint16
 	DataPath            string
@@ -27,7 +26,6 @@ func InitSettings() Settings {
 	applicationStorageLocation := getApplicationStorageLocation()
 	verboseFlag := pflag.BoolP("verbose", "v", false, "Verbose logging output")
 	intervalFlag := pflag.Uint16("interval", 60, "Time between tab checks in seconds")
-	dryRunFlag := pflag.Bool("dryrun", false, "Disable file writing")
 	legacyFileToImport := pflag.String("import-legacy", "", "Legacy file to import into "+
 		"application database. Not recommended to import into already existing database "+
 		"files given it doesn't sort imported entries",
@@ -48,7 +46,6 @@ func InitSettings() Settings {
 
 	settings := Settings{
 		Verbose:             *verboseFlag,
-		DryRun:              *dryRunFlag,
 		IsDevelopmentBuild:  isDevelopmentBuild,
 		UpdateInterval:      *intervalFlag,
 		DataPath:            applicationStorageLocation,

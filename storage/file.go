@@ -55,7 +55,7 @@ func asciiHostnameToPascalCase(input string) string {
 
 func stringCaseHostname(input string, ignoreFirst bool) string {
 	const capitalDifference byte = 'a' - 'A'
-	words := strings.FieldsFunc(strings.ToLower(input), isHostnameSperator)
+	words := strings.FieldsFunc(strings.ToLower(input), isHostnameSeparator)
 
 	for i, word := range words {
 		if ignoreFirst && i == 0 {
@@ -74,6 +74,6 @@ func asciiHostnameToCamelCase(input string) string {
 }
 
 // Returns true for ASCII hostname separators
-func isHostnameSperator(r rune) bool {
+func isHostnameSeparator(r rune) bool {
 	return r == '-' || r == '_'
 }
