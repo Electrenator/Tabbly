@@ -50,16 +50,27 @@ func closeFile(file *os.File) {
 }
 
 func asciiHostnameToPascalCase(input string) string {
-	const capitalDifference byte = 'a' - 'A'
-	parts := strings.FieldsFunc(strings.ToLower(input), isHostnameSperator)
+	return stringCaseHostname(input, false)
+}
 
-	for i, word := range parts {
+func stringCaseHostname(input string, ignoreFirst bool) string {
+	const capitalDifference byte = 'a' - 'A'
+	words := strings.FieldsFunc(strings.ToLower(input), isHostnameSperator)
+
+	for i, word := range words {
+		if ignoreFirst && i == 0 {
+			continue
+		}
 		wordParts := []byte(word)
 		wordParts[0] = wordParts[0] - capitalDifference
-		parts[i] = string(wordParts)
+		words[i] = string(wordParts)
 	}
 
-	return strings.Join(parts, "")
+	return strings.Join(words, "")
+}
+
+func asciiHostnameToCamelCase(input string) string {
+	return stringCaseHostname(input, true)
 }
 
 // Returns true for ASCII hostname separators

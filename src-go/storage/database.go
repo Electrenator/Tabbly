@@ -144,6 +144,7 @@ func getDbFilePath() string {
 		hostname = ""
 	}
 
+	hostname = asciiHostnameToCamelCase(hostname)
 	tmpFileName := fmt.Sprintf("%s-%s", dbName, hostname)
 
 	if ApplicationSettings.IsDevelopmentBuild {
