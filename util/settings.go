@@ -22,6 +22,7 @@ type Settings struct {
 const DefaultDirPerms = 0755
 const DefaultFilePerms = 0660
 
+// Define CLI arguments and build settings from received arguments.
 func InitSettings() Settings {
 	applicationStorageLocation := getApplicationStorageLocation()
 	verboseFlag := pflag.BoolP("verbose", "v", false, "Verbose logging output")
@@ -55,6 +56,8 @@ func InitSettings() Settings {
 	return settings
 }
 
+// Finds the default storage location for this application. This is an OS
+// specific path.
 func getApplicationStorageLocation() string {
 	const applicationName = "tabbly"
 	var storageDirectory string

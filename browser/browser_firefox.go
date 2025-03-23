@@ -79,6 +79,7 @@ func (browser *FirefoxBrowser) GetherWindowData() []WindowInfo {
 	return windowData
 }
 
+// Parses the Firefox backup session file.
 func parseSessionBackup(path string) (map[string]any, error) {
 	fileData, err := os.ReadFile(path)
 	if err != nil {

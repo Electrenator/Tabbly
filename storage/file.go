@@ -12,8 +12,10 @@ import (
 
 const developmentFileAddition = "-dev"
 
+// Reference here, so main can give it. Will prevent circular dependances.
 var ApplicationSettings *util.Settings
 
+// Copies file from targetFileName path to copyFileName path.
 func copyFile(targetFileName string, copyFileName string) error {
 	targetFile, err := os.Open(targetFileName)
 	if err != nil {
@@ -42,6 +44,7 @@ func copyFile(targetFileName string, copyFileName string) error {
 	return err
 }
 
+// Close a file with error handling
 func closeFile(file *os.File) {
 	err := file.Close()
 	if err != nil {

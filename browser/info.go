@@ -37,6 +37,8 @@ func GetAvailableBrowsers() []Browser {
 	return availableBrowsers
 }
 
+// Creates summary list containing all tabs open in every open window from
+// all given.
 func CreateSummary(info []BrowserInfo) []int {
 	var windowTabs []int
 

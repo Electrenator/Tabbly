@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Capitalization insensitive string.Contains.
 func StringContains(haystack string, needle string) bool {
 	return strings.Contains(
 		strings.ToLower(haystack),
@@ -14,6 +15,8 @@ func StringContains(haystack string, needle string) bool {
 	)
 }
 
+// Expands user specific properties of a directory path. Paths which will be
+// expanded might start with "~" or "%APPDATA%".
 func ExpandUserDirectory(path string) (string, error) {
 	usr, err := user.Current()
 	if err == nil {
@@ -30,7 +33,7 @@ func ExpandUserDirectory(path string) (string, error) {
 	return path, err
 }
 
-// Converts a list of any into a list of the given type
+// Converts a list of any into a list of the given type.
 //
 // From https://stackoverflow.com/a/24454401/13042236
 func ConvertSlice[E any](in []any) (out []E) {
@@ -41,6 +44,7 @@ func ConvertSlice[E any](in []any) (out []E) {
 	return
 }
 
+// Sums all entries of a list together.
 func SumSlice[T ~int](slice []T) T {
 	if slice == nil {
 		return -1
@@ -55,7 +59,8 @@ func SumSlice[T ~int](slice []T) T {
 
 // Checks if two slices are the same both in length and there values.
 //
-// Note: this isn't tested on slices with slices in them and likely isn't accurate for that case.
+// Note: this isn't tested on slices with slices in them and likely isn't
+// accurate for that case.
 func SameSlice[T comparable](a, b []T) bool {
 	if a == nil {
 		return b == nil

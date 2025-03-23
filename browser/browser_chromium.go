@@ -23,7 +23,8 @@ func GetChromiumBrowser() Browser {
 	}
 }
 
-// Yet unimplemented
+// Yet unimplemented. Will parse the chrome session file to get the tab
+// information within.
 func (browser *ChromiumBrowser) GetherWindowData() []WindowInfo {
 	//browser.getSessionStorageLocation()
 	// Do some magic~

@@ -78,8 +78,8 @@ func SaveMultipleToDb(timeBrowserInfoMap *[]TimedBrowserInfo) error {
 	return nil
 }
 
-// Save entry to the database at a specified timestamp. This can re-use an
-// existing DB connection.
+// Save BrowserInfo entries to the database at a specified timestamp. This can re-use an
+// existing DB connection and disable change detection logging.
 func saveToDbUsingConnection(time int64, browserInfoList []browser.BrowserInfo,
 	db *sql.DB, enableChangeLogging bool,
 ) error {
@@ -103,6 +103,8 @@ func saveToDbUsingConnection(time int64, browserInfoList []browser.BrowserInfo,
 	return nil
 }
 
+// Save a specific BrowserInfo entry to the database at a specific time, re-using
+// database connection.
 func saveBrowserEntryToDbUsingConnection(time int64, browser browser.BrowserInfo, db *sql.DB) error {
 	var browserId int64
 	err := db.QueryRow("SELECT `id` FROM `Browser` WHERE `name` == ?", browser.Name).Scan(&browserId)
