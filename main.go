@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"runtime"
+	"runtime/debug"
 	"time"
 
 	"github.com/electrenator/tabbly/browser"
@@ -26,6 +27,13 @@ func main() {
 		slog.SetLogLoggerLevel(slog.LevelWarn)
 	}
 	slog.Info(fmt.Sprintf("Application settings: %+v\n", settings))
+
+	if settings.ShowVersion {
+		fmt.Println(getApplicationVersion())
+		os.Exit(0)
+	} else {
+		slog.Info(getApplicationVersion())
+	}
 
 	if settings.LegacyFileForImport != "" {
 		storage.ImportLegacyCsv(settings.LegacyFileForImport)
@@ -62,4 +70,24 @@ func main() {
 		time.Sleep(time.Second * time.Duration(settings.UpdateInterval))
 	}
 
+}
+
+// Formats a version information string to be printed or logged.
+func getApplicationVersion() string {
+	applicationName := "Tabbly"
+
+	if buildInfo, ok := debug.ReadBuildInfo(); ok {
+		return fmt.Sprintf(
+			"%s (%s)\n ├ Version: %s\n └ Go version: %s",
+			applicationName,
+			buildInfo.Path,
+			buildInfo.Main.Version,
+			buildInfo.GoVersion,
+		)
+
+	}
+	return fmt.Sprintf("%s version unknown\n └ Go version: %s",
+		applicationName,
+		runtime.Version(),
+	)
 }

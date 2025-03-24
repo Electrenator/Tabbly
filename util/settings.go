@@ -17,6 +17,7 @@ type Settings struct {
 	DataPath            string
 	LegacyFileForImport string
 	PreferredDbSavePath string
+	ShowVersion         bool
 }
 
 const DefaultDirPerms = 0755
@@ -34,6 +35,7 @@ func InitSettings() Settings {
 	dbSaveLocation := pflag.String("db-location", "",
 		"Override where the db will be saved. Handy in combination with '--import-legacy'",
 	)
+	showVersion := pflag.Bool("version", false, "Print the application version then exit")
 	pflag.Parse()
 
 	if *dbSaveLocation != "" {
@@ -52,6 +54,7 @@ func InitSettings() Settings {
 		DataPath:            applicationStorageLocation,
 		LegacyFileForImport: *legacyFileToImport,
 		PreferredDbSavePath: *dbSaveLocation,
+		ShowVersion:         *showVersion,
 	}
 	return settings
 }
