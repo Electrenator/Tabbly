@@ -2,7 +2,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/electrenator/tabbly.svg)](https://pkg.go.dev/github.com/electrenator/tabbly)
 [![Go Report Card](https://goreportcard.com/badge/github.com/electrenator/tabbly)](https://goreportcard.com/report/github.com/electrenator/tabbly)
 
-Ever surprised by how large your tab counter gets within your browser? Due to them still being "needed" sometime or when you accumulate some information for an active project? Well this silly application is for helping to keep track of that usage and gather personal statistics on which browser window has how many tabs open. Could eventually make some pretty graphs of this data.
+Ever surprised by how large your tab counter gets within your browser? Due to them still being "needed" sometime or when you accumulate some information for an active project? Well this silly application helps to keep track of that usage and gather personal statistics on which browser window has how many tabs open. Could eventually make some pretty graphs from this data.
 
 Currently this application supports Firefox and it's development version however there are plans to support other browsers too ([#26](https://github.com/electrenator/tabbly/issues/26)). Limitations being that the browsers should save session restore files for this application to read. This meaning that browsers like Tor can never be supported.
 
