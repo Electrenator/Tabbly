@@ -2,9 +2,9 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/electrenator/tabbly.svg)](https://pkg.go.dev/github.com/electrenator/tabbly)
 [![Go Report Card](https://goreportcard.com/badge/github.com/electrenator/tabbly)](https://goreportcard.com/report/github.com/electrenator/tabbly)
 
-Ever surprised by how large your tab counter gets within your browser? Due to them still being "needed" sometime or when you accumulate some information for an active project? Well this application is to help one keep track of that usage and gather data on which browser window has how many tabs open. Hope to one day create of this.
+Ever surprised by how large your tab counter gets within your browser? Due to them still being "needed" sometime or when you accumulate some information for an active project? Well this silly application is for helping to keep track of that usage and gather personal statistics on which browser window has how many tabs open. Could eventually make some pretty graphs of this data.
 
-Currently this application supports Firefox and it's development version. There are plans to support other browsers too ([#26](https://github.com/electrenator/tabbly/issues/26)) but there currently isn't a timeline on that. Limitations being that the browsers should save session restore files for this application to read.
+Currently this application supports Firefox and it's development version however there are plans to support other browsers too ([#26](https://github.com/electrenator/tabbly/issues/26)). Limitations being that the browsers should save session restore files for this application to read. This meaning that browsers like Tor can never be supported.
 
 ## CLI arguments
 ```
@@ -13,6 +13,7 @@ Usage of tabbly:
       --import-legacy string   Legacy file to import into application database. Not recommended to import into already existing database files given it doesn't sort imported entries
       --interval uint16        Time between tab checks in seconds (default 60)
   -v, --verbose                Verbose logging output
+      --version                Print the application version then exit
 ```
 
 ## How to run
@@ -27,7 +28,7 @@ That makes it available at `~/go/bin/tabbly` to execute. One can execute it by c
 **Note**: installing it that way does *requires* `CGO` to be enabled and the `gcc` compiler to be percent. This is a requirement from the [go-sqlite3](https://github.com/mattn/go-sqlite3?tab=readme-ov-file#installation) dependency.
 
 ## Automatic starting
-Currently the only way to automatically start this application *on Linux* is to add it to cron after install using adding something along the lines of the following to your cron config;
+Currently the only way to automatically start this application *on Linux* is to add it to cron after install using adding something along the lines of the following to your cron config (`crontab -e`);
 ```cron
 @reboot ~/go/bin/tabbly
 ```
