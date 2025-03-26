@@ -53,7 +53,7 @@ func ImportLegacyCsv(filepath string) {
 		// Is data not already in read before?
 		if *timestamp == lastTimestamp || util.SameSlice(browserInfo.Windows, lastTabsPerWindow) ||
 			// While at it, do a little sanity check for the tab count
-			browserInfo.TotalTabs()-len(browserInfo.Windows) <= 0 {
+			browserInfo.TotalTabs()-len(browserInfo.Windows) < 0 {
 			continue
 		}
 
