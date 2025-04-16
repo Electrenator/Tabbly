@@ -67,6 +67,7 @@ func main() {
 		storage.SaveToDb(stats)
 
 		runtime.GC() // Can run GC if where going to sleep anyways
+		runtime.GC() // Also a second time to remove more marked objects from memory
 		time.Sleep(time.Second * time.Duration(settings.UpdateInterval))
 	}
 
