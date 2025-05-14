@@ -15,6 +15,9 @@ func GetFirefoxDeveloperBrowser() Browser {
 					// - Manjaro 25.0.0 (Zetar)
 					"~/.mozilla/firefox*/*.dev-edition-default/sessionstore-backups/recovery.jsonlz4",
 					// Found on:
+					// - Manjaro 25.0.0 (Zetar)
+					"~/.mozilla/firefox*/*.dev-edition-default-*/sessionstore-backups/recovery.jsonlz4",
+					// Found on:
 					// - Windows 11
 					"%APPDATA%/Mozilla/Firefox/Profiles/*.dev-edition-default/sessionstore-backups/recovery.jsonlz4",
 				},
