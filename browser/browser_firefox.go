@@ -3,7 +3,7 @@ package browser
 import (
 	"log/slog"
 
-	"gitlab.com/Electrenator/mozilla-lz4-decoder/mozillaLz4"
+	"gitlab.com/electrenator/mozilla-lz4-decoder/mozillaLz4"
 )
 
 type FirefoxBrowser struct {
@@ -41,7 +41,7 @@ func (browser *FirefoxBrowser) GetherWindowData() []WindowInfo {
 	var windowData []WindowInfo
 
 	for _, path := range browser.getSessionStorageLocation() {
-		jsonValues, err := mozillaLz4.Read(path)
+		browserData, err := mozillaLz4.Read(path)
 		if err != nil {
 			// Already logged in above function!
 			slog.Error(
@@ -52,9 +52,9 @@ func (browser *FirefoxBrowser) GetherWindowData() []WindowInfo {
 			continue
 		}
 
-		resultWindows := make([]WindowInfo, len(jsonValues.Windows))
+		resultWindows := make([]WindowInfo, len(browserData.Windows))
 
-		for i, window := range jsonValues.Windows {
+		for i, window := range browserData.Windows {
 			resultWindows[i] = WindowInfo{len(window.Tabs)}
 		}
 		windowData = append(windowData, resultWindows...)
