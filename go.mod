@@ -7,7 +7,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.27
 	github.com/shirou/gopsutil/v4 v4.25.3
 	github.com/spf13/pflag v1.0.6
-	gitlab.com/electrenator/mozilla-lz4-decoder v0.1.2
+	gitlab.com/electrenator/mozilla-lz4-decoder v1.0.0
 )
 
 require (
