@@ -40,6 +40,9 @@ func InitSettings() *Settings {
 		"Override where the db will be saved. Handy in combination with '--import-legacy'",
 	)
 	showVersion := pflag.Bool("version", false, "Print the application version then exit")
+	countSavedGroups := pflag.Bool("count-saved-groups", false,
+		"Count tabs from tab groups saved in the background as a separate active window",
+	)
 	pflag.Parse()
 
 	if *dbSaveLocation != "" {

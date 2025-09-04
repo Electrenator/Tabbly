@@ -3,6 +3,7 @@ package browser
 import (
 	"log/slog"
 
+	"github.com/electrenator/tabbly/util"
 	"gitlab.com/electrenator/mozilla-lz4-decoder/mozillaLz4"
 )
 
@@ -59,7 +60,7 @@ func (browser *FirefoxBrowser) GetherWindowData() []WindowInfo {
 		}
 		windowData = append(windowData, resultWindows...)
 
-		if true { // TODO; cli option for enabling this (disabled by default)
+		if util.AppSettings.CountSavedGroup {
 			savedGroupTabCount := browser.getSavedGroupTotalTabCount(browserData.SavedGroups)
 			if savedGroupTabCount > 0 {
 				windowData = append(windowData, WindowInfo{savedGroupTabCount})
