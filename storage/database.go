@@ -160,8 +160,8 @@ func getDbFilePath() string {
 	const dbName = "tabs"
 	const dbFileExt = ".sqlite"
 
-	if ApplicationSettings.PreferredDbSavePath != "" {
-		return ApplicationSettings.PreferredDbSavePath
+	if util.AppSettings.PreferredDbSavePath != "" {
+		return util.AppSettings.PreferredDbSavePath
 	}
 	hostname, err := os.Hostname()
 
@@ -172,17 +172,17 @@ func getDbFilePath() string {
 	hostname = asciiHostnameToCamelCase(hostname)
 	tmpFileName := fmt.Sprintf("%s-%s", dbName, hostname)
 
-	if ApplicationSettings.IsDevelopmentBuild {
+	if util.AppSettings.IsDevelopmentBuild {
 		tmpFileName += developmentFileAddition
 	}
-	return filepath.Join(ApplicationSettings.DataPath, tmpFileName+dbFileExt)
+	return filepath.Join(util.AppSettings.DataPath, tmpFileName+dbFileExt)
 }
 
 // Makes a SQLite DB connection if possible. Initializes the database if it
 // does not exist yet and runs migrations when the DB version is not up to
 // date with the current application version.
 func connectToDb() (*sql.DB, error) {
-	if err := os.MkdirAll(ApplicationSettings.DataPath, util.DefaultDirPerms); err != nil {
+	if err := os.MkdirAll(util.AppSettings.DataPath, util.DefaultDirPerms); err != nil {
 		slog.Error("Unable to application data directory!", "error", err)
 		os.Exit(internal_status.FILE_CREATION_ERROR)
 	}

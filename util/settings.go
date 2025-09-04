@@ -18,13 +18,17 @@ type Settings struct {
 	LegacyFileForImport string
 	PreferredDbSavePath string
 	ShowVersion         bool
+	CountSavedGroup     bool // If we should count the tabs from a saved tab group as another window
 }
 
 const DefaultDirPerms = 0755
 const DefaultFilePerms = 0660
 
+// Reference here, so others can use it. Will prevent circular dependances.
+var AppSettings *Settings
+
 // Define CLI arguments and build settings from received arguments.
-func InitSettings() Settings {
+func InitSettings() *Settings {
 	applicationStorageLocation := getApplicationStorageLocation()
 	verboseFlag := pflag.BoolP("verbose", "v", false, "Verbose logging output")
 	intervalFlag := pflag.Uint16("interval", 60, "Time between tab checks in seconds")
@@ -55,8 +59,10 @@ func InitSettings() Settings {
 		LegacyFileForImport: *legacyFileToImport,
 		PreferredDbSavePath: *dbSaveLocation,
 		ShowVersion:         *showVersion,
+		CountSavedGroup:     *countSavedGroups,
 	}
-	return settings
+	AppSettings = &settings
+	return &settings
 }
 
 // Finds the default storage location for this application. This is an OS
