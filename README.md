@@ -9,6 +9,7 @@ Currently this application supports Firefox and it's development version however
 ## CLI arguments
 ```
 Usage of tabbly:
+      --count-saved-groups     Count tabs from tab groups saved in the background as a separate active window
       --db-location string     Override where the db will be saved. Handy in combination with '--import-legacy'
       --import-legacy string   Legacy file to import into application database. Not recommended to import into already existing database files given it doesn't sort imported entries
       --interval uint16        Time between tab checks in seconds (default 60)

@@ -21,7 +21,6 @@ var databasefiles embed.FS
 func main() {
 	settings := util.InitSettings()
 	storage.Databasefiles = databasefiles
-	storage.ApplicationSettings = &settings
 
 	if !settings.Verbose {
 		slog.SetLogLoggerLevel(slog.LevelWarn)
