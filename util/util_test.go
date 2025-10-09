@@ -89,6 +89,14 @@ func TestExpandUserDirectory(test *testing.T) {
 	}
 }
 
+func TestExpandUserDirectoryErrorPaths(test *testing.T) {
+	// unset all enviroment variables
+	// test.Setenv()
+
+	// then run path extention with a %APPDATA% prefix
+	// should return a unaltered path
+}
+
 func TestSameSlice(test *testing.T) {
 	var longValue []int = []int{98, 76, 54}
 	var shortValue []int = []int{12, 34}

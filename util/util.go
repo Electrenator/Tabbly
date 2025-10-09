@@ -16,7 +16,8 @@ func StringContains(haystack string, needle string) bool {
 }
 
 // Expands user specific properties of a directory path. Paths which will be
-// expanded might start with "~" or "%APPDATA%".
+// expanded might start with "~" or "%APPDATA%". Returns an unaltered path
+// when unsuccessful with error set.
 func ExpandUserDirectory(path string) (string, error) {
 	usr, err := user.Current()
 	if err != nil {
