@@ -1,4 +1,4 @@
-package storage
+package internal_storage
 
 import (
 	"database/sql"
@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/electrenator/tabbly/browser"
-	internal_status "github.com/electrenator/tabbly/internal/status"
+	internal_setting "github.com/electrenator/tabbly/internal/setting"
 	"github.com/electrenator/tabbly/util"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -37,7 +37,7 @@ func SaveToDb(browserInfoList []browser.BrowserInfo) {
 	db, err := connectToDb()
 	if err != nil {
 		slog.Error("Unable to connect to database", "error", err)
-		os.Exit(internal_status.DB_CONNECT_ERROR)
+		os.Exit(util.DB_CONNECT_ERROR)
 	}
 	defer db.Close()
 
@@ -160,8 +160,8 @@ func getDbFilePath() string {
 	const dbName = "tabs"
 	const dbFileExt = ".sqlite"
 
-	if util.AppSettings.PreferredDbSavePath != "" {
-		return util.AppSettings.PreferredDbSavePath
+	if internal_setting.AppSettings.PreferredDbSavePath != "" {
+		return internal_setting.AppSettings.PreferredDbSavePath
 	}
 	hostname, err := os.Hostname()
 
@@ -172,24 +172,24 @@ func getDbFilePath() string {
 	hostname = asciiHostnameToCamelCase(hostname)
 	tmpFileName := fmt.Sprintf("%s-%s", dbName, hostname)
 
-	if util.AppSettings.IsDevelopmentBuild {
+	if internal_setting.AppSettings.IsDevelopmentBuild {
 		tmpFileName += developmentFileAddition
 	}
-	return filepath.Join(util.AppSettings.DataPath, tmpFileName+dbFileExt)
+	return filepath.Join(internal_setting.AppSettings.DataPath, tmpFileName+dbFileExt)
 }
 
 // Makes a SQLite DB connection if possible. Initializes the database if it
 // does not exist yet and runs migrations when the DB version is not up to
 // date with the current application version.
 func connectToDb() (*sql.DB, error) {
-	if err := os.MkdirAll(util.AppSettings.DataPath, util.DefaultDirPerms); err != nil {
+	if err := os.MkdirAll(internal_setting.AppSettings.DataPath, internal_setting.DefaultDirPerms); err != nil {
 		slog.Error("Unable to application data directory!", "error", err)
-		os.Exit(internal_status.FILE_CREATION_ERROR)
+		os.Exit(util.FILE_CREATION_ERROR)
 	}
 
-	if file, err := os.OpenFile(getDbFilePath(), os.O_CREATE, util.DefaultFilePerms); err != nil {
+	if file, err := os.OpenFile(getDbFilePath(), os.O_CREATE, internal_setting.DefaultFilePerms); err != nil {
 		slog.Error("Unable to create DB file!", "error", err)
-		os.Exit(internal_status.FILE_CREATION_ERROR)
+		os.Exit(util.FILE_CREATION_ERROR)
 	} else {
 		file.Close()
 	}
@@ -217,7 +217,7 @@ func connectToDb() (*sql.DB, error) {
 			if err != nil {
 				db.Close()
 				slog.Error("Unable to migrate...", "error", err)
-				os.Exit(internal_status.DB_MIGRATION_ERROR)
+				os.Exit(util.DB_MIGRATION_ERROR)
 			}
 		} else {
 			slog.Info(fmt.Sprintf("Database on schema on version %d", currentDbSchemaVersion))

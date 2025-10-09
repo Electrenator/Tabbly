@@ -1,4 +1,4 @@
-package storage
+package internal_storage
 
 import (
 	"io"
@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/dustin/go-humanize"
-	"github.com/electrenator/tabbly/util"
+	internal_setting "github.com/electrenator/tabbly/internal/setting"
 )
 
 const developmentFileAddition = "-dev"
@@ -20,7 +20,7 @@ func copyFile(targetFileName string, copyFileName string) error {
 	}
 	defer closeFile(targetFile)
 
-	copyFile, err := os.OpenFile(copyFileName, os.O_WRONLY|os.O_CREATE, util.DefaultFilePerms)
+	copyFile, err := os.OpenFile(copyFileName, os.O_WRONLY|os.O_CREATE, internal_setting.DefaultFilePerms)
 	if err != nil {
 		return err
 	}
@@ -49,16 +49,12 @@ func closeFile(file *os.File) {
 	}
 }
 
-func asciiHostnameToPascalCase(input string) string {
-	return stringCaseHostname(input, false)
-}
-
-func stringCaseHostname(input string, ignoreFirst bool) string {
+func asciiHostnameToCamelCase(input string) string {
 	const capitalDifference byte = 'a' - 'A'
 	words := strings.FieldsFunc(strings.ToLower(input), isHostnameSeparator)
 
 	for i, word := range words {
-		if ignoreFirst && i == 0 {
+		if i == 0 {
 			continue
 		}
 		wordParts := []byte(word)
@@ -67,10 +63,6 @@ func stringCaseHostname(input string, ignoreFirst bool) string {
 	}
 
 	return strings.Join(words, "")
-}
-
-func asciiHostnameToCamelCase(input string) string {
-	return stringCaseHostname(input, true)
 }
 
 // Returns true for ASCII hostname separators

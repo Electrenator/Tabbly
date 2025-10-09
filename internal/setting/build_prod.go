@@ -1,6 +1,6 @@
 //go:build !dev
 // +build !dev
 
-package util
+package internal_setting
 
 const isDevelopmentBuild = false

@@ -1,4 +1,4 @@
-package storage
+package internal_storage
 
 import (
 	"bufio"
@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	"github.com/electrenator/tabbly/browser"
-	internal_status "github.com/electrenator/tabbly/internal/status"
 	"github.com/electrenator/tabbly/util"
 )
 
@@ -27,14 +26,14 @@ func ImportLegacyCsv(filepath string) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		slog.Error("Unable to open file", "error", err)
-		os.Exit(internal_status.FILE_OPEN_ERROR)
+		os.Exit(util.FILE_OPEN_ERROR)
 	}
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	if !isLegacyCsv(scanner) {
 		slog.Warn("Given file is not a legacy csv save file")
-		os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
+		os.Exit(util.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 	}
 
 	var lastTimestamp int64
@@ -47,7 +46,7 @@ func ImportLegacyCsv(filepath string) {
 
 		if err != nil {
 			slog.Error(err.Error())
-			os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
+			os.Exit(util.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 		}
 
 		// Is data not already in read before?
@@ -68,7 +67,7 @@ func ImportLegacyCsv(filepath string) {
 
 	if err := scanner.Err(); err != nil {
 		slog.Error("Issue reading file", "error", err)
-		os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
+		os.Exit(util.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 	}
 	slog.Info("Scanned legacy save!",
 		"totalDeduplicatedEntries", len(windowsTimeMap),
@@ -77,7 +76,7 @@ func ImportLegacyCsv(filepath string) {
 
 	if err := SaveMultipleToDb(&windowsTimeMap); err != nil {
 		// Already logged in DB rollback
-		os.Exit(internal_status.DB_CONNECT_ERROR)
+		os.Exit(util.DB_CONNECT_ERROR)
 	}
 }
 

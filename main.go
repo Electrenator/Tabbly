@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/electrenator/tabbly/browser"
-	internal_status "github.com/electrenator/tabbly/internal/status"
-	"github.com/electrenator/tabbly/storage"
+	internal_setting "github.com/electrenator/tabbly/internal/setting"
+	internal_storage "github.com/electrenator/tabbly/internal/storage"
 	"github.com/electrenator/tabbly/util"
 )
 
@@ -19,8 +19,8 @@ import (
 var databasefiles embed.FS
 
 func main() {
-	settings := util.InitSettings()
-	storage.Databasefiles = databasefiles
+	settings := internal_setting.InitSettings()
+	internal_storage.Databasefiles = databasefiles
 
 	if !settings.Verbose {
 		slog.SetLogLoggerLevel(slog.LevelWarn)
@@ -35,8 +35,8 @@ func main() {
 	}
 
 	if settings.LegacyFileForImport != "" {
-		storage.ImportLegacyCsv(settings.LegacyFileForImport)
-		os.Exit(internal_status.OK)
+		internal_storage.ImportLegacyCsv(settings.LegacyFileForImport)
+		os.Exit(util.STATUS_OK)
 	}
 
 	for {
@@ -63,7 +63,7 @@ func main() {
 		if settings.Verbose {
 			slog.Info(fmt.Sprintf("Browsers: %+v\n", stats))
 		}
-		storage.SaveToDb(stats)
+		internal_storage.SaveToDb(stats)
 
 		runtime.GC() // Can run GC if where going to sleep anyways
 		runtime.GC() // Also a second time to remove more marked objects from memory

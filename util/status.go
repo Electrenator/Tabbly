@@ -1,7 +1,7 @@
-package internal_status
+package util
 
 const (
-	OK = iota
+	STATUS_OK = iota
 	UNSPECIFIED_PRIMARY_FUNCTION_ERROR
 	FILE_CREATION_ERROR
 	FILE_OPEN_ERROR

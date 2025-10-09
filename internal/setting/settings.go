@@ -1,4 +1,4 @@
-package util
+package internal_setting
 
 import (
 	"log/slog"
@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	internal_status "github.com/electrenator/tabbly/internal/status"
+	"github.com/electrenator/tabbly/util"
 	"github.com/spf13/pflag"
 )
 
@@ -49,7 +49,7 @@ func InitSettings() *Settings {
 		absoluteSavePath, err := filepath.Abs(*dbSaveLocation)
 		if err != nil {
 			slog.Error("Unable to expand db location", "path", *dbSaveLocation, "error", err)
-			os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
+			os.Exit(util.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 		}
 		dbSaveLocation = &absoluteSavePath
 	}
@@ -88,7 +88,7 @@ func getApplicationStorageLocation() string {
 
 	if err != nil {
 		slog.Error("Error getting application directory", "error", err)
-		os.Exit(internal_status.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
+		os.Exit(util.UNSPECIFIED_PRIMARY_FUNCTION_ERROR)
 	}
 
 	return storageDirectory
