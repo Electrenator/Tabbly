@@ -44,7 +44,7 @@ func ConvertSlice[E any](in []any) (out []E) {
 	return
 }
 
-// Sums all entries of a list together.
+// Sums all entries of a list together. Will return -1 if no slice is given.
 func SumSlice[T ~int](slice []T) T {
 	if slice == nil {
 		return -1
