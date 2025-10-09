@@ -34,17 +34,6 @@ func ExpandUserDirectory(path string) (string, error) {
 	return path, nil
 }
 
-// Converts a list of any into a list of the given type.
-//
-// From https://stackoverflow.com/a/24454401/13042236
-func ConvertSlice[E any](in []any) (out []E) {
-	out = make([]E, 0, len(in))
-	for _, v := range in {
-		out = append(out, v.(E))
-	}
-	return
-}
-
 // Sums all entries of a list together. Will return -1 if no slice is given.
 func SumSlice[T ~int](slice []T) T {
 	if slice == nil {
@@ -62,6 +51,7 @@ func SumSlice[T ~int](slice []T) T {
 //
 // Note: this isn't tested on slices with slices in them and likely isn't
 // accurate for that case.
+// Should be replaced with std function (slices.Compare)
 func SameSlice[T comparable](a, b []T) bool {
 	if a == nil {
 		return b == nil

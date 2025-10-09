@@ -4,10 +4,12 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 
 	"github.com/electrenator/tabbly/util"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestStringContains(test *testing.T) {
@@ -85,4 +87,30 @@ func TestExpandUserDirectory(test *testing.T) {
 				caseInput, caseOutput, path)
 		}
 	}
+}
+
+func TestSameSlice(test *testing.T) {
+	var longValue []int = []int{98, 76, 54}
+	var shortValue []int = []int{12, 34}
+	assert := assert.New(test)
+
+	assert.False(util.SameSlice(longValue, shortValue))
+	assert.False(util.SameSlice(shortValue, longValue))
+	assert.True(util.SameSlice(shortValue, shortValue))
+	assert.True(util.SameSlice(longValue, longValue))
+
+	// And the inverse
+	inverseValue := slices.Clone(longValue)
+	slices.Reverse(inverseValue)
+	assert.False(util.SameSlice(longValue, inverseValue))
+}
+
+func TestSameSliceNill(test *testing.T) {
+	var value []int = []int{12, 34}
+	var noValue []int = nil
+	assert := assert.New(test)
+
+	assert.False(util.SameSlice(value, noValue))
+	assert.False(util.SameSlice(noValue, value))
+	assert.True(util.SameSlice(noValue, noValue))
 }
