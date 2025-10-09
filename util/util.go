@@ -19,18 +19,19 @@ func StringContains(haystack string, needle string) bool {
 // expanded might start with "~" or "%APPDATA%".
 func ExpandUserDirectory(path string) (string, error) {
 	usr, err := user.Current()
-	if err == nil {
-		if strings.HasPrefix(path, "~/") {
-			path = filepath.Join(usr.HomeDir, path[2:])
-		} else if strings.HasPrefix(path, "%APPDATA%") {
-			appDataPath, err := os.UserConfigDir()
-			if err != nil {
-				return path, err
-			}
-			path = strings.Replace(path, "%APPDATA%", appDataPath, 1)
-		}
+	if err != nil {
+		return path, err
 	}
-	return path, err
+	if strings.HasPrefix(path, "~/") {
+		path = filepath.Join(usr.HomeDir, path[2:])
+	} else if strings.HasPrefix(path, "%APPDATA%") {
+		appDataPath, err := os.UserConfigDir()
+		if err != nil {
+			return path, err
+		}
+		path = strings.Replace(path, "%APPDATA%", appDataPath, 1)
+	}
+	return path, nil
 }
 
 // Converts a list of any into a list of the given type.

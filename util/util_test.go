@@ -1,6 +1,9 @@
 package util_test
 
 import (
+	"os/user"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -40,5 +43,46 @@ func TestSumSliceNegative(test *testing.T) {
 	if util.SumSlice[int](nil) != -1 {
 		test.Error("Empty slice should give -1 result")
 		test.Fail()
+	}
+}
+
+func pathExpansionConfigDir() string {
+	switch runtime.GOOS {
+	case "windows":
+		return ""
+	case "darwin", "ios":
+		return "Library/Application Support"
+	case "plan9":
+		return "lib"
+	default:
+		return ".config"
+	}
+}
+
+func TestExpandUserDirectory(test *testing.T) {
+	configDir := pathExpansionConfigDir()
+	usr, err := user.Current()
+	if err != nil {
+		test.Error(err)
+	}
+
+	test.Setenv("AppData", usr.HomeDir)
+	cases := map[string]string{
+		"~/directory":                    filepath.Join(usr.HomeDir, "directory"),
+		"some/weird/~/directory":         "some/weird/~/directory",
+		"%APPDATA%/directory":            filepath.Join(usr.HomeDir, configDir, "directory"),
+		"some/weird/%APPDATA%/directory": "some/weird/%APPDATA%/directory",
+	}
+
+	for caseInput, caseOutput := range cases {
+		path, err := util.ExpandUserDirectory(caseInput)
+		if err != nil {
+			test.Error(err)
+		}
+
+		if strings.Compare(caseOutput, path) != 0 {
+			test.Errorf("Path expansion of '%s' should be '%s' but expanded to: %s",
+				caseInput, caseOutput, path)
+		}
 	}
 }
