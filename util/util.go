@@ -52,7 +52,6 @@ func SumSlice[T ~int](slice []T) T {
 //
 // Note: this isn't tested on slices with slices in them and likely isn't
 // accurate for that case.
-// Should be replaced with std function (slices.Compare)
 func SameSlice[T comparable](a, b []T) bool {
 	if a == nil {
 		return b == nil

@@ -1,6 +1,7 @@
 package util_test
 
 import (
+	"os"
 	"os/user"
 	"path/filepath"
 	"runtime"
@@ -90,11 +91,16 @@ func TestExpandUserDirectory(test *testing.T) {
 }
 
 func TestExpandUserDirectoryErrorPaths(test *testing.T) {
-	// unset all enviroment variables
-	// test.Setenv()
+	const INPUT_PATH = "%APPDATA%/directory"
 
-	// then run path extention with a %APPDATA% prefix
+	// unset all environment variables
+	os.Clearenv()
+
+	// then run path extension with a %APPDATA% prefix
 	// should return a unaltered path
+	path, err := util.ExpandUserDirectory(INPUT_PATH)
+	assert.Equal(test, INPUT_PATH, path)
+	assert.Error(test, err)
 }
 
 func TestSameSlice(test *testing.T) {
