@@ -16,35 +16,26 @@ func StringContains(haystack string, needle string) bool {
 }
 
 // Expands user specific properties of a directory path. Paths which will be
-// expanded might start with "~" or "%APPDATA%".
+// expanded might start with "~" or "%APPDATA%". Returns an unaltered path
+// when unsuccessful with error set.
 func ExpandUserDirectory(path string) (string, error) {
 	usr, err := user.Current()
-	if err == nil {
-		if strings.HasPrefix(path, "~/") {
-			path = filepath.Join(usr.HomeDir, path[2:])
-		} else if strings.HasPrefix(path, "%APPDATA%") {
-			appDataPath, err := os.UserConfigDir()
-			if err != nil {
-				return path, err
-			}
-			path = strings.Replace(path, "%APPDATA%", appDataPath, 1)
+	if err != nil {
+		return path, err
+	}
+	if strings.HasPrefix(path, "~/") {
+		path = filepath.Join(usr.HomeDir, path[2:])
+	} else if strings.HasPrefix(path, "%APPDATA%") {
+		appDataPath, err := os.UserConfigDir()
+		if err != nil {
+			return path, err
 		}
+		path = strings.Replace(path, "%APPDATA%", appDataPath, 1)
 	}
-	return path, err
+	return path, nil
 }
 
-// Converts a list of any into a list of the given type.
-//
-// From https://stackoverflow.com/a/24454401/13042236
-func ConvertSlice[E any](in []any) (out []E) {
-	out = make([]E, 0, len(in))
-	for _, v := range in {
-		out = append(out, v.(E))
-	}
-	return
-}
-
-// Sums all entries of a list together.
+// Sums all entries of a list together. Will return -1 if no slice is given.
 func SumSlice[T ~int](slice []T) T {
 	if slice == nil {
 		return -1

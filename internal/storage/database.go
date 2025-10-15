@@ -18,6 +18,7 @@ import (
 )
 
 const dbStructureDirectory = "database"
+const developmentFileAddition = "-dev"
 
 var Databasefiles embed.FS
 
@@ -255,7 +256,7 @@ func getVersionFromFile(filename string) int {
 	nameParts := strings.Split(filename, "-")
 
 	if len(nameParts) <= 0 {
-		return -1
+		return -1 // Likely will never arrive here
 	}
 	version, err := strconv.Atoi(nameParts[0])
 	if err != nil {
