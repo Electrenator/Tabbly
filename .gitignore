@@ -3,6 +3,7 @@ log/
 **/*.sqlite
 **/*.bck
 tabbly*
+!**/testData/**/*
 
 # IDE files
 **/.vscode/

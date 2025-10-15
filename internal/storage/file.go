@@ -10,8 +10,6 @@ import (
 	internal_setting "github.com/electrenator/tabbly/internal/setting"
 )
 
-const developmentFileAddition = "-dev"
-
 // Copies file from targetFileName path to copyFileName path.
 func copyFile(targetFileName string, copyFileName string) error {
 	targetFile, err := os.Open(targetFileName)
